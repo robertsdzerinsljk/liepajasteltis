@@ -366,7 +366,7 @@ const year = new Date().getFullYear();
 
 	@media (max-width: 640px) {
 		.site-footer {
-			padding-bottom: 0.9rem;
+			padding-bottom: calc(1.65rem + env(safe-area-inset-bottom, 0px));
 		}
 
 		.site-footer__meta,
@@ -397,9 +397,12 @@ const year = new Date().getFullYear();
 		}
 
 		.site-footer__mobile-bottom {
+			box-sizing: border-box;
 			width: 100%;
-			max-width: calc(100% - 1.9rem);
-			margin: -0.18rem auto 0;
+			max-width: calc(100% - 6.8rem);
+			min-height: 1.65rem;
+			margin: 0.42rem auto 0;
+			padding-block: 0.18rem 0.32rem;
 			display: flex;
 			flex-wrap: nowrap;
 			align-items: center;
@@ -408,7 +411,7 @@ const year = new Date().getFullYear();
 			color: var(--footer-muted);
 			font-size: clamp(0.455rem, 1.7vw, 0.56rem);
 			font-weight: 560;
-			line-height: 1.35;
+			line-height: 1.55;
 			text-align: center;
 			white-space: nowrap;
 		}

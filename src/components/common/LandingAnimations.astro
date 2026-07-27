@@ -396,6 +396,31 @@
 		position: relative;
 	}
 
+	[data-landing-page][data-landing-preview] [data-hero-eyebrow],
+	[data-landing-page][data-landing-preview] [data-hero-copy],
+	[data-landing-page][data-landing-preview] [data-hero-actions] {
+		opacity: 0;
+		transform: translateY(24px);
+	}
+
+	[data-landing-page][data-landing-preview] [data-hero-line] {
+		transform: translateY(115%) rotate(2deg);
+	}
+
+	[data-landing-page][data-landing-preview] [data-hero-copy] {
+		transform: translateY(36px);
+	}
+
+	[data-landing-page][data-landing-preview] [data-hero-actions] {
+		transform: translateY(28px) scale(0.94);
+	}
+
+	[data-landing-page][data-landing-preview] [data-hero-media] {
+		opacity: 0;
+		clip-path: inset(0 100% 0 0 round var(--landing-hero-media-radius, 0px));
+		transform: scale(1.1);
+	}
+
 	[data-landing-page][data-landing-preview] [data-section-media] {
 		opacity: 0.36;
 		transform: translateX(34px) scale(0.94);

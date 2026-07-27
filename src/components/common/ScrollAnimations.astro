@@ -34,8 +34,14 @@
 						: 0;
 
 			const initialY = direction === 'up' ? 24 : 0;
+			const previewOpacity = Number.parseFloat(
+				element.dataset.revealPreview ?? ''
+			);
+			const initialOpacity = Number.isFinite(previewOpacity)
+				? Math.min(Math.max(previewOpacity, 0), 1)
+				: 0;
 
-			element.style.opacity = '0';
+			element.style.opacity = String(initialOpacity);
 			element.style.transform = `translate3d(${initialX}px, ${initialY}px, 0)`;
 
 			inView(
@@ -79,6 +85,10 @@
 	html.motion-preload [data-reveal] {
 		opacity: 0;
 		transform: translate3d(0, 24px, 0);
+	}
+
+	html.motion-preload [data-reveal-preview] {
+		opacity: 0.38;
 	}
 
 	html.motion-preload [data-reveal="left"] {

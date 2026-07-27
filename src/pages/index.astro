@@ -20,7 +20,7 @@ import Truck from '@lucide/astro/icons/truck';
 import UserRound from '@lucide/astro/icons/user-round';
 import hugeIcons from '@iconify-json/hugeicons/icons.json';
 
-const heroImage = '/images/landing-tent-pic.svg';
+const heroImage = '/images/liepajas-teltis-landing.svg';
 
 const heroFeatures = [
 	{
@@ -1073,6 +1073,10 @@ const contactLinks = [
 			height: auto;
 		}
 
+		.landing-hero__features {
+			display: none;
+		}
+
 		.categories-section__grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -1139,35 +1143,18 @@ const contactLinks = [
 
 		.landing-hero__lead {
 			max-width: 14.7rem;
-			margin-top: 0.78rem;
-			font-size: 0.72rem;
-			line-height: 1.45;
+			margin-top: 0.86rem;
+			font-size: 0.82rem;
+			line-height: 1.5;
 		}
 
 		.landing-hero__features {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 0.48rem;
-			width: min(65vw, 17.3rem);
-			max-width: none;
-			margin-top: 0.88rem;
-		}
-
-		.landing-hero__feature {
-			font-size: 0.62rem;
-		}
-
-		.landing-hero__feature svg {
-			width: 1.45rem;
-			height: 1.45rem;
-		}
-
-		.landing-hero__feature strong {
-			font-size: 0.53rem;
+			display: none;
 		}
 
 		.landing-hero__cta {
 			min-height: 2.72rem;
-			margin-top: 0.95rem;
+			margin-top: 1.15rem;
 			padding-inline: 1.25rem 1.05rem;
 			font-size: 0.68rem;
 		}

@@ -5,6 +5,7 @@ import ChevronLeft from '@lucide/astro/icons/chevron-left';
 import ChevronRight from '@lucide/astro/icons/chevron-right';
 import Clock3 from '@lucide/astro/icons/clock-3';
 import Euro from '@lucide/astro/icons/euro';
+import Layers from '@lucide/astro/icons/layers';
 import Maximize2 from '@lucide/astro/icons/maximize-2';
 import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
 import Ruler from '@lucide/astro/icons/ruler';
@@ -53,6 +54,15 @@ const { breadcrumbCurrent, description, filters, products, title } = Astro.props
 const allFilterLabel = filters[0]?.label;
 const visibleFilterLimit = 3;
 const hasFilterOverflow = filters.length > visibleFilterLimit;
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const catalogLinks = [
+	{ href: '/teltis', label: 'Teltis' },
+	{ href: '/gridas-segumi', label: 'Grīdas segumi' },
+	{ href: '/galdi-un-kresli', label: 'Galdi un krēsli' },
+	{ href: '/ara-silditaji', label: 'Āra sildītāji' },
+	{ href: '/pufi', label: 'Pufi' },
+].map((item) => ({ ...item, active: currentPath === item.href }));
+const activeCatalogLabel = catalogLinks.find((link) => link.active)?.label ?? title;
 const sizeOptions = Array.from(new Set(products.map((product) => product.size).filter(Boolean))).sort((first, second) =>
 	first.localeCompare(second, 'lv'),
 );
@@ -97,15 +107,25 @@ const modalProducts = products.map((product) => ({
 								<span>Sazinies ar mums</span>
 							</span>
 						</a>
-						<label class="product-category__size-filter product-category__size-filter--mobile">
-							<Ruler aria-hidden="true" />
-							<span class="product-category__size-filter-label" data-product-size-filter-label>Visi izmēri</span>
-							<select data-product-size-filter aria-label="Filtrēt pēc izmēra">
-								<option value="all">Visi izmēri</option>
-								{sizeOptions.map((size) => <option value={size}>{size}</option>)}
-							</select>
-							<ChevronDown aria-hidden="true" />
-						</label>
+						<div class="product-category__mobile-selects">
+							<label class="product-category__catalog-filter product-category__catalog-filter--mobile">
+								<Layers aria-hidden="true" />
+								<span class="product-category__select-label">{activeCatalogLabel}</span>
+								<select data-product-catalog-select aria-label="Atvērt kataloga sadaļu">
+									{catalogLinks.map((link) => <option value={link.href} selected={link.active}>{link.label}</option>)}
+								</select>
+								<ChevronDown aria-hidden="true" />
+							</label>
+							<label class="product-category__size-filter product-category__size-filter--mobile">
+								<Ruler aria-hidden="true" />
+								<span class="product-category__select-label product-category__size-filter-label" data-product-size-filter-label>Visi izmēri</span>
+								<select data-product-size-filter aria-label="Filtrēt pēc izmēra">
+									<option value="all">Visi izmēri</option>
+									{sizeOptions.map((size) => <option value={size}>{size}</option>)}
+								</select>
+								<ChevronDown aria-hidden="true" />
+							</label>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -155,9 +175,17 @@ const modalProducts = products.map((product) => ({
 						</div>
 					)
 				}
+				<label class="product-category__catalog-filter product-category__catalog-filter--desktop">
+					<Layers aria-hidden="true" />
+					<span class="product-category__select-label">{activeCatalogLabel}</span>
+					<select data-product-catalog-select aria-label="Atvērt kataloga sadaļu">
+						{catalogLinks.map((link) => <option value={link.href} selected={link.active}>{link.label}</option>)}
+					</select>
+					<ChevronDown aria-hidden="true" />
+				</label>
 				<label class="product-category__size-filter product-category__size-filter--desktop">
 					<Ruler aria-hidden="true" />
-					<span class="product-category__size-filter-label" data-product-size-filter-label>Visi izmēri</span>
+					<span class="product-category__select-label product-category__size-filter-label" data-product-size-filter-label>Visi izmēri</span>
 					<select data-product-size-filter aria-label="Filtrēt pēc izmēra">
 						<option value="all">Visi izmēri</option>
 						{sizeOptions.map((size) => <option value={size}>{size}</option>)}
@@ -302,7 +330,7 @@ const modalProducts = products.map((product) => ({
 						</button>
 						<div class="product-modal__quantity" aria-label="Daudzums">
 							<button data-product-modal-quantity-decrease type="button" aria-label="Samazināt daudzumu">-</button>
-							<span data-product-modal-quantity>0</span>
+							<span data-product-modal-quantity>1</span>
 							<button data-product-modal-quantity-increase type="button" aria-label="Palielināt daudzumu">+</button>
 						</div>
 					</div>
@@ -456,6 +484,7 @@ const modalProducts = products.map((product) => ({
 	}
 
 	.product-category__tab,
+	.product-category__catalog-filter,
 	.product-category__size-filter {
 		min-height: 2.6rem;
 		border: 1px solid transparent;
@@ -479,33 +508,17 @@ const modalProducts = products.map((product) => ({
 		background: transparent;
 	}
 
-	.product-category__tab::after {
-		position: absolute;
-		right: 0.75rem;
-		bottom: -0.34rem;
-		left: 0.75rem;
-		height: 2px;
-		background: #6b7a4a;
-		border-radius: 999px;
-		content: "";
-		opacity: 0;
-		transform: scaleX(0.5);
-		transition:
-			opacity 160ms ease,
-			transform 160ms ease;
-	}
-
 	.product-category__tab.is-active,
 	.product-category__tab:hover {
 		color: var(--color-surface);
 		background: #6b7a4a;
 	}
 
-	.product-category__tab.is-active::after {
-		opacity: 1;
-		transform: scaleX(1);
+	.product-category__mobile-selects {
+		display: none;
 	}
 
+	.product-category__catalog-filter,
 	.product-category__size-filter {
 		position: relative;
 		padding: 0 0.6rem 0 0.8rem;
@@ -517,17 +530,25 @@ const modalProducts = products.map((product) => ({
 		border-color: rgba(222, 212, 198, 0.96);
 	}
 
-	.product-category__size-filter-label {
+	.product-category__select-label {
 		min-width: 7.5rem;
 		padding-right: 1.25rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		line-height: 1;
 		pointer-events: none;
 	}
 
+	.product-category__catalog-filter .product-category__select-label {
+		min-width: 7.75rem;
+	}
+
+	.product-category__catalog-filter:hover,
 	.product-category__size-filter:hover {
 		background: var(--color-background-soft);
 	}
 
+	.product-category__catalog-filter svg,
 	.product-category__size-filter svg {
 		flex: 0 0 auto;
 		width: 1rem;
@@ -535,6 +556,7 @@ const modalProducts = products.map((product) => ({
 		stroke-width: 2;
 	}
 
+	.product-category__catalog-filter select,
 	.product-category__size-filter select {
 		position: absolute;
 		inset: 0;
@@ -549,19 +571,23 @@ const modalProducts = products.map((product) => ({
 		-webkit-tap-highlight-color: transparent;
 	}
 
+	.product-category__catalog-filter select option,
 	.product-category__size-filter select option {
 		color: var(--color-bark);
 		background: var(--color-surface);
 	}
 
+	.product-category__catalog-filter select:focus,
 	.product-category__size-filter select:focus {
 		outline: none;
 	}
 
+	.product-category__catalog-filter select:focus-visible,
 	.product-category__size-filter select:focus-visible {
 		outline: none;
 	}
 
+	.product-category__catalog-filter svg:last-child,
 	.product-category__size-filter svg:last-child {
 		position: absolute;
 		right: 0.62rem;
@@ -569,6 +595,10 @@ const modalProducts = products.map((product) => ({
 	}
 
 	.product-category__size-filter--mobile {
+		display: none;
+	}
+
+	.product-category__catalog-filter--mobile {
 		display: none;
 	}
 
@@ -1577,8 +1607,25 @@ const modalProducts = products.map((product) => ({
 			width: 100%;
 		}
 
+		.product-category__catalog-filter--desktop {
+			display: none;
+		}
+
 		.product-category__size-filter--desktop {
 			display: none;
+		}
+
+		.product-category__mobile-selects {
+			display: flex;
+			flex: 0 0 auto;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 0.55rem;
+		}
+
+		.product-category__catalog-filter--mobile {
+			display: inline-flex;
+			width: fit-content;
 		}
 
 		.product-category__size-filter--mobile {
@@ -1670,6 +1717,28 @@ const modalProducts = products.map((product) => ({
 			border-radius: 14px;
 		}
 
+		.product-category__intro-actions {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0.85rem;
+		}
+
+		.product-category__help {
+			width: 100%;
+		}
+
+		.product-category__mobile-selects {
+			width: 100%;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			gap: 0.45rem;
+		}
+
+		.product-category__catalog-filter--mobile,
+		.product-category__size-filter--mobile {
+			width: 100%;
+		}
+
 		.product-category__tabs {
 			width: 100%;
 			flex-wrap: nowrap;
@@ -1700,12 +1769,6 @@ const modalProducts = products.map((product) => ({
 			flex: 0 0 auto;
 		}
 
-		.product-category__tab::after {
-			right: 0.6rem;
-			bottom: -0.4rem;
-			left: 0.6rem;
-		}
-
 		.product-category__filter-menu {
 			z-index: 20;
 			display: grid;
@@ -1721,9 +1784,15 @@ const modalProducts = products.map((product) => ({
 			font-size: 0.75rem;
 		}
 
-		.product-category__size-filter-label {
-			min-width: 5.6rem;
-			max-width: 6.8rem;
+		.product-category__catalog-filter {
+			min-height: 2.35rem;
+			font-size: 0.75rem;
+		}
+
+		.product-category__select-label,
+		.product-category__catalog-filter .product-category__select-label {
+			min-width: 0;
+			max-width: none;
 		}
 
 		.product-category__grid {
@@ -1969,6 +2038,7 @@ const modalProducts = products.map((product) => ({
 	const productFilterButtons = document.querySelectorAll<HTMLButtonElement>('[data-product-filter]');
 	const productFilterMenuToggles = document.querySelectorAll<HTMLButtonElement>('[data-product-filter-menu-toggle]');
 	const productFilterMenus = document.querySelectorAll<HTMLElement>('.product-category__filter-menu');
+	const productCatalogSelects = document.querySelectorAll<HTMLSelectElement>('[data-product-catalog-select]');
 	const productSizeFilters = document.querySelectorAll<HTMLSelectElement>('[data-product-size-filter]');
 	const productSizeFilterLabels = document.querySelectorAll<HTMLElement>('[data-product-size-filter-label]');
 	const productCards = document.querySelectorAll<HTMLElement>('[data-product-category]');
@@ -2017,7 +2087,7 @@ const modalProducts = products.map((product) => ({
 	let activeModalProduct: ProductModalItem | null = null;
 	let activeModalCartItemId: string | null = null;
 	let activeGalleryIndex = 0;
-	let activeModalQuantity = 0;
+	let activeModalQuantity = 1;
 	let activeProductCategoryFilter = 'all';
 	let activeProductSizeFilter = 'all';
 	let activeModalDateInput: HTMLInputElement | null = null;
@@ -2112,6 +2182,17 @@ const modalProducts = products.map((product) => ({
 			syncProductCategoryFilterButtons();
 			closeProductFilterMenus();
 			applyProductFilters();
+		});
+	});
+
+	productCatalogSelects.forEach((select) => {
+		select.addEventListener('change', () => {
+			const nextPath = select.value;
+			const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+
+			if (nextPath && nextPath !== currentPath) {
+				window.location.href = nextPath;
+			}
 		});
 	});
 
@@ -2393,7 +2474,7 @@ const modalProducts = products.map((product) => ({
 		activeModalCartItemId = options.cartItemId ?? null;
 		activeGalleryIndex = 0;
 		viewedGalleryIndexes = new Set([0]);
-		setModalQuantity(options.quantity ?? 0);
+		setModalQuantity(options.quantity ?? 1);
 		lastFocusedProductElement = trigger;
 		setProductModalTab('basic');
 		setText(productModalCategory, product.category);
