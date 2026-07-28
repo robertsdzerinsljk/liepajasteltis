@@ -12,6 +12,7 @@ export type ProductItem = {
 	image: string;
 	installTime: string;
 	priceCents: number;
+	priceUnit?: string;
 	size: string;
 	title: string;
 	variant?: string;
@@ -112,9 +113,49 @@ const mapProductRow = (row: ProductRow): ProductItem | null => {
 		image,
 		installTime: getString(row, ['install_time', 'installTime', 'setup_time'], 'Uzstādīšanas laiks: pēc vienošanās'),
 		priceCents: getPriceCents(row),
+		priceUnit: getString(row, ['price_unit', 'priceUnit', 'price_suffix', 'priceSuffix', 'unit']) || undefined,
 		size: getString(row, ['size', 'dimensions', 'area'], 'Pēc pieprasījuma'),
 		title,
 		variant: getString(row, ['variant', 'default_variant']) || undefined,
+	};
+};
+
+const productImageOverrides: Record<string, { galleryImages: string[]; image?: string; priceUnit?: string }> = {
+	'telts-10x30': {
+		galleryImages: ['/images/products/telts-10x30-1.jpg', '/images/products/telts-10x30.jpg'],
+		priceUnit: 'm²',
+	},
+	'pagoda-telts-5x5': {
+		galleryImages: ['/images/products/pagoda-telts-5x5.jpg', '/images/products/pagoda-telts-5x5-1.jpg'],
+		priceUnit: 'diennakts',
+	},
+	'kokteilgalds-ar-galdautu': {
+		galleryImages: [
+			'/images/products/kokteilgalds-1.jpg',
+			'/images/products/kokteilgalds.jpg',
+			'/images/products/kokteilgalds-2.jpg',
+		],
+		priceUnit: 'gab.',
+	},
+	'telts-3x6': {
+		galleryImages: ['/images/products/telts-3x6.jpg'],
+		priceUnit: 'gab.',
+	},
+	'telts-3x3': {
+		galleryImages: ['/images/products/telts-3x3.jpg'],
+		priceUnit: 'gab.',
+	},
+};
+
+const applyProductGalleryOverrides = (product: ProductItem) => {
+	const override = productImageOverrides[product.id];
+	const galleryImages = Array.from(new Set(override?.galleryImages ?? product.galleryImages));
+
+	return {
+		...product,
+		galleryImages,
+		image: override?.image ?? galleryImages[0] ?? product.image,
+		priceUnit: override?.priceUnit ?? product.priceUnit,
 	};
 };
 
@@ -128,7 +169,7 @@ export async function getProductsByPageSlug(pageSlug: string) {
 		},
 	});
 
-	const products = sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[];
+	const products = (sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[]).map(applyProductGalleryOverrides);
 
 	return products;
 }
@@ -157,7 +198,7 @@ export async function getAllActiveProducts() {
 		},
 	});
 
-	const products = sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[];
+	const products = (sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[]).map(applyProductGalleryOverrides);
 
 	return products;
 }

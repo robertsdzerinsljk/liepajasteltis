@@ -36,6 +36,7 @@ type ProductItem = {
 	image: string;
 	installTime: string;
 	priceCents: number;
+	priceUnit?: string;
 	size: string;
 	title: string;
 	variant?: string;
@@ -81,6 +82,7 @@ const modalProducts = products.map((product) => ({
 	image: product.image,
 	installTime: product.installTime,
 	priceCents: product.priceCents,
+	priceUnit: product.priceUnit ?? '',
 	size: product.size,
 	title: product.title,
 	variant: product.variant ?? '',
@@ -357,7 +359,10 @@ const categoryStructuredData = [
 					</dl>
 					<div class="product-modal__price" data-product-modal-basic>
 						<span>Nomas cena</span>
-						<strong data-product-modal-price></strong>
+						<div class="product-modal__price-value">
+							<strong data-product-modal-price></strong>
+							<small data-product-modal-price-unit></small>
+						</div>
 					</div>
 					<div class="product-modal__dates" data-product-modal-basic aria-label="Nomas periods">
 						<label>
@@ -738,6 +743,9 @@ const categoryStructuredData = [
 
 	.product-card {
 		min-width: 0;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 		overflow: hidden;
 		background: rgba(255, 255, 255, 0.7);
 		border: 1px solid rgba(222, 212, 198, 0.82);
@@ -768,6 +776,7 @@ const categoryStructuredData = [
 
 	.product-card__media {
 		position: relative;
+		flex: 0 0 auto;
 		display: block;
 		aspect-ratio: 1.42 / 1;
 		overflow: hidden;
@@ -801,7 +810,10 @@ const categoryStructuredData = [
 	}
 
 	.product-card__body {
+		flex: 1;
 		padding: 1.05rem 1rem 1rem;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.product-card__body h2 {
@@ -854,6 +866,7 @@ const categoryStructuredData = [
 	}
 
 	.product-card__button {
+		margin-top: auto;
 		min-height: 2.55rem;
 		padding: 0 1rem;
 		display: flex;
@@ -1401,12 +1414,34 @@ const categoryStructuredData = [
 		text-transform: uppercase;
 	}
 
+	.product-modal__price-value {
+		display: flex;
+		align-items: baseline;
+		justify-content: flex-end;
+		gap: 0.38rem;
+		min-width: 0;
+		color: var(--color-bark);
+		text-align: right;
+		white-space: nowrap;
+	}
+
 	.product-modal__price strong {
 		color: var(--color-bark);
 		font-size: clamp(1.72rem, 3vw, 2.18rem);
 		font-weight: 780;
 		line-height: 0.95;
 		white-space: nowrap;
+	}
+
+	.product-modal__price small {
+		color: var(--color-text-muted);
+		font-size: 0.86rem;
+		font-weight: 720;
+		line-height: 1;
+	}
+
+	.product-modal__price small:empty {
+		display: none;
 	}
 
 	.product-modal__dates {
@@ -1580,9 +1615,14 @@ const categoryStructuredData = [
 		z-index: 5;
 		display: grid;
 		grid-template-rows: minmax(0, 1fr) auto;
-		place-items: center;
-		gap: 1rem;
-		padding: clamp(1rem, 3vw, 2rem);
+		align-items: stretch;
+		justify-items: center;
+		gap: clamp(0.65rem, 1.5vw, 1rem);
+		height: 100vh;
+		height: 100dvh;
+		padding: clamp(0.75rem, 2vw, 1.5rem);
+		box-sizing: border-box;
+		overflow: hidden;
 	}
 
 	.product-modal__fullscreen-backdrop {
@@ -1598,17 +1638,24 @@ const categoryStructuredData = [
 	.product-modal__fullscreen-stage {
 		position: relative;
 		z-index: 1;
-		width: min(calc(100% - 7rem), 72rem);
-		height: min(78vh, 46rem);
+		width: min(100%, 72rem);
+		height: 100%;
+		min-height: 0;
 		display: grid;
 		place-items: center;
-		margin-top: 2.6rem;
+		margin: 0;
+		padding: 3.35rem clamp(3.6rem, 6vw, 4.5rem) 0.25rem;
+		box-sizing: border-box;
+		overflow: visible;
 		touch-action: pan-y;
 	}
 
 	.product-modal__fullscreen-stage img {
+		display: block;
 		width: 100%;
 		height: 100%;
+		min-width: 0;
+		min-height: 0;
 		object-fit: contain;
 	}
 
@@ -1741,6 +1788,7 @@ const categoryStructuredData = [
 
 		.product-modal__fullscreen-stage {
 			width: min(100%, 72rem);
+			padding-inline: 3.25rem;
 		}
 
 		.product-modal__fullscreen-thumbs-shell {
@@ -1748,16 +1796,16 @@ const categoryStructuredData = [
 		}
 
 		.product-modal__fullscreen-close {
-			top: -3.25rem;
-			right: 0;
+			top: 0.2rem;
+			right: 0.2rem;
 		}
 
 		.product-modal__fullscreen-nav--prev {
-			left: 0.5rem;
+			left: 0.35rem;
 		}
 
 		.product-modal__fullscreen-nav--next {
-			right: 0.5rem;
+			right: 0.35rem;
 		}
 	}
 
@@ -2031,6 +2079,10 @@ const categoryStructuredData = [
 			font-size: 1.55rem;
 		}
 
+		.product-modal__price small {
+			font-size: 0.74rem;
+		}
+
 		.product-modal__dates {
 			order: 4;
 			width: 100%;
@@ -2094,6 +2146,35 @@ const categoryStructuredData = [
 			font-size: 0.78rem;
 		}
 
+		.product-modal__fullscreen {
+			gap: 0.5rem;
+			padding: 0.55rem;
+		}
+
+		.product-modal__fullscreen-stage {
+			padding: 3rem 0.35rem 0.1rem;
+		}
+
+		.product-modal__fullscreen-nav {
+			width: 2.5rem;
+			height: 2.5rem;
+			background: rgba(246, 241, 231, 0.82);
+		}
+
+		.product-modal__fullscreen-nav--prev {
+			left: 0.1rem;
+		}
+
+		.product-modal__fullscreen-nav--next {
+			right: 0.1rem;
+		}
+
+		.product-modal__fullscreen-thumbs-shell {
+			gap: 0.35rem;
+			padding: 0.42rem;
+			border-radius: 14px;
+		}
+
 		.product-category__cta {
 			grid-template-columns: 1fr;
 			gap: 0.85rem;
@@ -2117,6 +2198,7 @@ const categoryStructuredData = [
 		image: string;
 		installTime: string;
 		priceCents: number;
+		priceUnit: string;
 		size: string;
 		title: string;
 		variant: string;
@@ -2169,6 +2251,7 @@ const categoryStructuredData = [
 	const productModalCapacity = document.querySelector<HTMLElement>('[data-product-modal-capacity]');
 	const productModalInstall = document.querySelector<HTMLElement>('[data-product-modal-install]');
 	const productModalPrice = document.querySelector<HTMLElement>('[data-product-modal-price]');
+	const productModalPriceUnit = document.querySelector<HTMLElement>('[data-product-modal-price-unit]');
 	const productModalDateStart = document.querySelector<HTMLInputElement>('[data-product-modal-date-start]');
 	const productModalDateEnd = document.querySelector<HTMLInputElement>('[data-product-modal-date-end]');
 	const productModalAdd = document.querySelector<HTMLButtonElement>('[data-product-modal-add]');
@@ -2375,6 +2458,8 @@ const categoryStructuredData = [
 		});
 	};
 
+	const isElementVisible = (element: HTMLElement) => element.offsetParent !== null;
+
 	const updateGalleryImage = () => {
 		const gallery = getActiveGallery();
 		const imageUrl = gallery[activeGalleryIndex] ?? activeModalProduct?.image ?? '';
@@ -2407,7 +2492,7 @@ const categoryStructuredData = [
 			button.classList.toggle('is-viewed', viewedGalleryIndexes.has(Number(button.dataset.productModalThumb)));
 			button.setAttribute('aria-current', String(isActive));
 
-			if (isActive) {
+			if (isActive && isElementVisible(button)) {
 				button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 			}
 		});
@@ -2418,7 +2503,7 @@ const categoryStructuredData = [
 			button.classList.toggle('is-viewed', viewedGalleryIndexes.has(Number(button.dataset.productModalThumb)));
 			button.setAttribute('aria-current', String(isActive));
 
-			if (isActive) {
+			if (isActive && isElementVisible(button)) {
 				button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 			}
 		});
@@ -2579,6 +2664,7 @@ const categoryStructuredData = [
 		setText(productModalCapacity, formatModalCapacity(product.capacity));
 		setText(productModalInstall, product.installTime.replace(/^.*?:\s*/, ''));
 		setText(productModalPrice, modalCurrencyFormatter.format(product.priceCents / 100));
+		setText(productModalPriceUnit, product.priceUnit ? `/ ${product.priceUnit}` : '');
 		if (productModalDateStart) productModalDateStart.value = options.startDate ?? '';
 		if (productModalDateEnd) {
 			productModalDateEnd.value = options.endDate ?? '';
