@@ -313,8 +313,11 @@ const contactLinks = [
 						<ChevronDown aria-hidden="true" />
 					</button>
 
-					<form class="contact-form" id="contact-form-panel" name="noma-pieteikums" method="post" data-netlify="true">
-						<input type="hidden" name="form-name" value="noma-pieteikums" />
+					<form class="contact-form" id="contact-form-panel" name="noma-pieteikums" method="post" action="https://api.web3forms.com/submit">
+						<input type="hidden" name="access_key" value="9a35f76f-aca7-4606-8fb8-1e3e9c685965" />
+						<input type="hidden" name="subject" value="Jauns ātrais nomas pieteikums - Liepājas teltis" />
+						<input type="hidden" name="from_name" value="Liepājas teltis mājaslapa" />
+						<input class="contact-form__botcheck" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
 
 						<fieldset class="fieldset contact-form__field">
 							<label class="fieldset-legend" for="contact-name">Vārds, uzvārds</label>
@@ -406,6 +409,7 @@ const contactLinks = [
 								<span>Nosūtīt pieteikumu</span>
 								<Send aria-hidden="true" />
 							</button>
+							<p class="contact-form__status" data-contact-form-status role="status" aria-live="polite" hidden></p>
 						</div>
 					</form>
 				</div>
@@ -1023,6 +1027,35 @@ const contactLinks = [
 		line-height: 1.4;
 	}
 
+	.contact-form__botcheck {
+		position: absolute;
+		left: -9999px;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.contact-form__status {
+		grid-column: 1 / -1;
+		max-width: none;
+		margin-top: -0.2rem;
+		padding: 0.72rem 0.9rem;
+		background: rgba(237, 228, 215, 0.64);
+		border: 1px solid rgba(185, 167, 143, 0.48);
+		border-radius: 14px;
+	}
+
+	.contact-form__status[data-status="success"] {
+		color: #344234;
+		background: rgba(138, 146, 113, 0.14);
+		border-color: rgba(138, 146, 113, 0.5);
+	}
+
+	.contact-form__status[data-status="error"] {
+		color: #7b2f2f;
+		background: rgba(146, 85, 76, 0.12);
+		border-color: rgba(146, 85, 76, 0.34);
+	}
+
 	.contact-form__button {
 		min-height: 3.15rem;
 		padding-inline: 1.7rem;
@@ -1043,6 +1076,12 @@ const contactLinks = [
 		color: var(--color-surface);
 		background: var(--color-primary-hover);
 		transform: translateY(-2px);
+	}
+
+	.contact-form__button:disabled {
+		cursor: progress;
+		opacity: 0.72;
+		transform: none;
 	}
 
 	.contact-form__button svg {
@@ -1420,7 +1459,46 @@ const contactLinks = [
 	const contactFormToggle = document.querySelector('[data-contact-form-toggle]');
 	const contactFormToggleLabel = document.querySelector('[data-contact-form-toggle-label]');
 	const contactFormPanel = document.querySelector('#contact-form-panel');
+	const contactForm = contactFormPanel instanceof HTMLFormElement ? contactFormPanel : null;
+	const contactSubmitButton = contactForm?.querySelector<HTMLButtonElement>('[type="submit"]');
+	const contactSubmitLabel = contactSubmitButton?.querySelector<HTMLElement>('span');
+	const contactFormStatus = document.querySelector<HTMLElement>('[data-contact-form-status]');
 	const contactFormMobileQuery = window.matchMedia('(max-width: 640px)');
+	const defaultContactSubmitLabel = contactSubmitLabel?.textContent ?? 'Nosūtīt pieteikumu';
+
+	const getContactFormString = (formData: FormData, key: string) => {
+		const value = formData.get(key);
+		return typeof value === 'string' ? value.trim() : '';
+	};
+
+	const setContactFormStatus = (message: string, type: 'success' | 'error' | 'neutral' = 'neutral') => {
+		if (!contactFormStatus) return;
+
+		contactFormStatus.textContent = message;
+		contactFormStatus.hidden = false;
+		contactFormStatus.dataset.status = type;
+	};
+
+	const setContactFormSubmitting = (isSubmitting: boolean) => {
+		if (contactSubmitButton) {
+			contactSubmitButton.disabled = isSubmitting;
+			contactSubmitButton.setAttribute('aria-busy', String(isSubmitting));
+		}
+
+		if (contactSubmitLabel) {
+			contactSubmitLabel.textContent = isSubmitting ? 'Sūta...' : defaultContactSubmitLabel;
+		}
+	};
+
+	const buildContactFormMessage = (formData: FormData) =>
+		[
+			`Vārds, uzvārds: ${getContactFormString(formData, 'vards_uzvards')}`,
+			`Telefona numurs: ${getContactFormString(formData, 'telefona_numurs')}`,
+			`Epasts: ${getContactFormString(formData, 'epasts')}`,
+			`Pasākuma datums: ${getContactFormString(formData, 'pasakuma_datums')}`,
+			`Norises vieta: ${getContactFormString(formData, 'pasakuma_norises_vieta')}`,
+			`Vēlamais inventārs:\n${getContactFormString(formData, 'velamais_inventars') || '-'}`,
+		].join('\n\n');
 
 	const updateContactFormState = () => {
 		if (
@@ -1448,6 +1526,45 @@ const contactLinks = [
 	contactFormToggle?.addEventListener('click', () => {
 		contactFormShell?.classList.toggle('is-open');
 		updateContactFormState();
+	});
+
+	contactForm?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+
+		if (!contactForm.reportValidity()) {
+			return;
+		}
+
+		const formData = new FormData(contactForm);
+
+		if (formData.get('botcheck')) {
+			return;
+		}
+
+		formData.set('name', getContactFormString(formData, 'vards_uzvards'));
+		formData.set('email', getContactFormString(formData, 'epasts'));
+		formData.set('message', buildContactFormMessage(formData));
+		setContactFormSubmitting(true);
+		setContactFormStatus('Sūtām pieteikumu...', 'neutral');
+
+		try {
+			const response = await fetch(contactForm.action, {
+				method: 'POST',
+				body: formData,
+			});
+			const result = await response.json();
+
+			if (!response.ok || !result.success) {
+				throw new Error(result.message || 'Form submission failed');
+			}
+
+			contactForm.reset();
+			setContactFormStatus('Pieteikums nosūtīts. Sazināsimies ar jums tuvākajā laikā.', 'success');
+		} catch {
+			setContactFormStatus('Neizdevās nosūtīt pieteikumu. Lūdzu, pamēģiniet vēlreiz vai zvaniet mums.', 'error');
+		} finally {
+			setContactFormSubmitting(false);
+		}
 	});
 
 	contactFormMobileQuery.addEventListener('change', () => {

@@ -146,8 +146,11 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 					</div>
 				</div>
 
-				<form id="nomas-pieteikums" class="request-form" name="nomas-pieteikums" method="post" data-netlify="true">
-					<input type="hidden" name="form-name" value="nomas-pieteikums" />
+				<form id="nomas-pieteikums" class="request-form" name="nomas-pieteikums" method="post" action="https://api.web3forms.com/submit">
+					<input type="hidden" name="access_key" value="9a35f76f-aca7-4606-8fb8-1e3e9c685965" />
+					<input type="hidden" name="subject" value="Jauns nomas pieteikums - Liepājas teltis" />
+					<input type="hidden" name="from_name" value="Liepājas teltis mājaslapa" />
+					<input class="request-form__botcheck" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
 					<input data-request-cart-hidden type="hidden" name="nomas_saraksts" value="" />
 					<div class="request-form__header">
 						<p class="request-workspace__eyebrow">Pieteikuma forma</p>
@@ -278,6 +281,7 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 							<span>Nosūtīt pieteikumu</span>
 							<Send aria-hidden="true" />
 						</button>
+						<p class="request-form__status" data-request-form-status role="status" aria-live="polite" hidden></p>
 					</div>
 				</form>
 			</section>
@@ -320,8 +324,12 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 	const productHidden = document.querySelector<HTMLInputElement>('[data-request-product-hidden]');
 	const cartHidden = document.querySelector<HTMLInputElement>('[data-request-cart-hidden]');
 	const productChipTemplate = document.querySelector<HTMLTemplateElement>('[data-request-product-chip-template]');
+	const requestSubmitButton = requestForm?.querySelector<HTMLButtonElement>('[type="submit"]');
+	const requestSubmitLabel = requestSubmitButton?.querySelector<HTMLElement>('span');
+	const requestStatus = document.querySelector<HTMLElement>('[data-request-form-status]');
 	const requestProducts: RequestProductOption[] = productDataNode?.textContent ? JSON.parse(productDataNode.textContent) : [];
 	let selectedRequestProducts: RequestProductOption[] = [];
+	const defaultSubmitLabel = requestSubmitLabel?.textContent ?? 'Nosūtīt pieteikumu';
 
 	const normalizeRequestSearch = (value: string) =>
 		value
@@ -351,6 +359,51 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 		const details = [item.variant, item.size].filter(Boolean).join(', ');
 		const quantity = item.quantity ?? 1;
 		return `${quantity} × ${item.title}${details ? ` (${details})` : ''}; periods: ${formatCartImportPeriod(item)}`;
+	};
+
+	const getFormDataString = (formData: FormData, key: string) => {
+		const value = formData.get(key);
+		return typeof value === 'string' ? value.trim() : '';
+	};
+
+	const setRequestStatus = (message: string, type: 'success' | 'error' | 'neutral' = 'neutral') => {
+		if (!requestStatus) return;
+
+		requestStatus.textContent = message;
+		requestStatus.hidden = false;
+		requestStatus.dataset.status = type;
+	};
+
+	const setRequestSubmitting = (isSubmitting: boolean) => {
+		if (requestSubmitButton) {
+			requestSubmitButton.disabled = isSubmitting;
+			requestSubmitButton.setAttribute('aria-busy', String(isSubmitting));
+		}
+
+		if (requestSubmitLabel) {
+			requestSubmitLabel.textContent = isSubmitting ? 'Sūta...' : defaultSubmitLabel;
+		}
+	};
+
+	const buildRequestMessage = (formData: FormData) => {
+		const services = formData
+			.getAll('papildu_pakalpojumi')
+			.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+			.join(', ');
+		const lines = [
+			`Vārds, uzvārds: ${getFormDataString(formData, 'vards_uzvards')}`,
+			`Telefona numurs: ${getFormDataString(formData, 'telefona_numurs')}`,
+			`Epasts: ${getFormDataString(formData, 'epasts')}`,
+			`Pasākuma datums: ${getFormDataString(formData, 'pasakuma_datums')}`,
+			`Norises vieta: ${getFormDataString(formData, 'pasakuma_norises_vieta')}`,
+			`Izvēlētie produkti:\n${getFormDataString(formData, 'izveletie_produkti') || '-'}`,
+			`Vēlamais inventārs:\n${getFormDataString(formData, 'velamais_inventars') || '-'}`,
+			`Papildu pakalpojumi: ${services || '-'}`,
+			`Papildu ziņa:\n${getFormDataString(formData, 'papildu_zina') || '-'}`,
+			`Nomas saraksts:\n${getFormDataString(formData, 'nomas_saraksts') || '-'}`,
+		];
+
+		return lines.join('\n\n');
 	};
 
 	const updateSelectedProductField = () => {
@@ -502,6 +555,50 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 	document.addEventListener('click', (event) => {
 		if (!productPicker?.contains(event.target as Node) && productResults) {
 			productResults.hidden = true;
+		}
+	});
+
+	requestForm?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+
+		if (!requestForm.reportValidity()) {
+			return;
+		}
+
+		updateSelectedProductField();
+		const formData = new FormData(requestForm);
+
+		if (formData.get('botcheck')) {
+			return;
+		}
+
+		formData.set('name', getFormDataString(formData, 'vards_uzvards'));
+		formData.set('email', getFormDataString(formData, 'epasts'));
+		formData.set('message', buildRequestMessage(formData));
+		setRequestSubmitting(true);
+		setRequestStatus('Sūtām pieteikumu...', 'neutral');
+
+		try {
+			const response = await fetch(requestForm.action, {
+				method: 'POST',
+				body: formData,
+			});
+			const result = await response.json();
+
+			if (!response.ok || !result.success) {
+				throw new Error(result.message || 'Form submission failed');
+			}
+
+			requestForm.reset();
+			selectedRequestProducts = [];
+			renderSelectedProducts();
+			if (productResults) productResults.hidden = true;
+			if (cartHidden) cartHidden.value = '';
+			setRequestStatus('Pieteikums nosūtīts. Sazināsimies ar jums tuvākajā laikā.', 'success');
+		} catch {
+			setRequestStatus('Neizdevās nosūtīt pieteikumu. Lūdzu, pamēģiniet vēlreiz vai zvaniet mums.', 'error');
+		} finally {
+			setRequestSubmitting(false);
 		}
 	});
 
@@ -1132,6 +1229,35 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 		line-height: 1.42;
 	}
 
+	.request-form__botcheck {
+		position: absolute;
+		left: -9999px;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.request-form__status {
+		grid-column: 1 / -1;
+		max-width: none;
+		margin-top: -0.25rem;
+		padding: 0.74rem 0.9rem;
+		background: rgba(237, 228, 215, 0.64);
+		border: 1px solid rgba(185, 167, 143, 0.48);
+		border-radius: 14px;
+	}
+
+	.request-form__status[data-status="success"] {
+		color: #344234;
+		background: rgba(138, 146, 113, 0.14);
+		border-color: rgba(138, 146, 113, 0.5);
+	}
+
+	.request-form__status[data-status="error"] {
+		color: #7b2f2f;
+		background: rgba(146, 85, 76, 0.12);
+		border-color: rgba(146, 85, 76, 0.34);
+	}
+
 	.request-form__submit {
 		min-height: 3.15rem;
 		padding: 0 1.55rem;
@@ -1154,6 +1280,12 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 		color: var(--color-surface);
 		background: var(--color-primary-hover);
 		transform: translateY(-2px);
+	}
+
+	.request-form__submit:disabled {
+		cursor: progress;
+		opacity: 0.72;
+		transform: none;
 	}
 
 	.request-form__submit svg {
