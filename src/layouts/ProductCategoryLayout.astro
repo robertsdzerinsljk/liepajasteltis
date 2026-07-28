@@ -4,7 +4,6 @@ import ChevronDown from '@lucide/astro/icons/chevron-down';
 import ChevronLeft from '@lucide/astro/icons/chevron-left';
 import ChevronRight from '@lucide/astro/icons/chevron-right';
 import Clock3 from '@lucide/astro/icons/clock-3';
-import Euro from '@lucide/astro/icons/euro';
 import Layers from '@lucide/astro/icons/layers';
 import Maximize2 from '@lucide/astro/icons/maximize-2';
 import MessageCircleQuestionMark from '@lucide/astro/icons/message-circle-question-mark';
@@ -55,6 +54,11 @@ const allFilterLabel = filters[0]?.label;
 const visibleFilterLimit = 3;
 const hasFilterOverflow = filters.length > visibleFilterLimit;
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const siteUrl = 'https://liepajasteltis.lv';
+const pageUrl = new URL(Astro.url.pathname, siteUrl);
+pageUrl.hash = '';
+pageUrl.search = '';
+const canonicalUrl = pageUrl.href;
 const catalogLinks = [
 	{ href: '/teltis', label: 'Teltis' },
 	{ href: '/gridas-segumi', label: 'Grīdas segumi' },
@@ -81,9 +85,55 @@ const modalProducts = products.map((product) => ({
 	title: product.title,
 	variant: product.variant ?? '',
 }));
+const categoryStructuredData = [
+	{
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{
+				'@type': 'ListItem',
+				position: 1,
+				name: 'Sākums',
+				item: siteUrl,
+			},
+			{
+				'@type': 'ListItem',
+				position: 2,
+				name: breadcrumbCurrent,
+				item: canonicalUrl,
+			},
+		],
+	},
+	{
+		'@type': 'CollectionPage',
+		name: `${title} | Liepājas teltis`,
+		description,
+		url: canonicalUrl,
+		mainEntity: {
+			'@type': 'ItemList',
+			itemListElement: products.map((product, index) => ({
+				'@type': 'ListItem',
+				position: index + 1,
+				item: {
+					'@type': 'Product',
+					name: product.title,
+					description: product.description ?? description,
+					category: product.category,
+					image: new URL(product.image, siteUrl).href,
+					offers: {
+						'@type': 'Offer',
+						price: (product.priceCents / 100).toFixed(2),
+						priceCurrency: 'EUR',
+						availability: 'https://schema.org/InStock',
+						url: `${canonicalUrl}#${product.id}`,
+					},
+				},
+			})),
+		},
+	},
+];
 ---
 
-<BaseLayout title={`${title} | Liepājas teltis`} description={description}>
+<BaseLayout title={`${title} | Liepājas teltis`} description={description} structuredData={categoryStructuredData}>
 	<div class="page-shell product-page">
 		<SiteHeader />
 		<main class="product-category" aria-labelledby="product-category-title">
@@ -304,12 +354,11 @@ const modalProducts = products.map((product) => ({
 							<dt>Uzstādīšana</dt>
 							<dd data-product-modal-install></dd>
 						</div>
-						<div>
-							<Euro aria-hidden="true" />
-							<dt>Cena</dt>
-							<dd data-product-modal-price></dd>
-						</div>
 					</dl>
+					<div class="product-modal__price" data-product-modal-basic>
+						<span>Nomas cena</span>
+						<strong data-product-modal-price></strong>
+					</div>
 					<div class="product-modal__dates" data-product-modal-basic aria-label="Nomas periods">
 						<label>
 							<span>No</span>
@@ -1294,11 +1343,11 @@ const modalProducts = products.map((product) => ({
 	.product-modal__specs div {
 		min-width: 0;
 		overflow-wrap: anywhere;
-		padding: 0.85rem;
+		padding: 0.78rem;
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
 		align-items: start;
-		column-gap: 0.58rem;
+		column-gap: 0.46rem;
 		background: rgba(237, 228, 215, 0.58);
 		border: 1px solid rgba(222, 212, 198, 0.78);
 		border-radius: 12px;
@@ -1318,9 +1367,10 @@ const modalProducts = products.map((product) => ({
 		color: var(--color-text-muted);
 		font-size: 0.66rem;
 		font-weight: 780;
-		letter-spacing: 0.12em;
+		letter-spacing: 0.08em;
 		line-height: 1.2;
 		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
 	.product-modal__specs dd {
@@ -1329,6 +1379,34 @@ const modalProducts = products.map((product) => ({
 		font-size: 0.9rem;
 		font-weight: 680;
 		line-height: 1.35;
+	}
+
+	.product-modal__price {
+		width: min(100%, 30rem);
+		margin-top: clamp(1rem, 2vw, 1.35rem);
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-top: 0.95rem;
+		border-top: 1px solid rgba(222, 212, 198, 0.88);
+	}
+
+	.product-modal__price span {
+		color: var(--color-text-muted);
+		font-size: 0.68rem;
+		font-weight: 780;
+		letter-spacing: 0.1em;
+		line-height: 1.2;
+		text-transform: uppercase;
+	}
+
+	.product-modal__price strong {
+		color: var(--color-bark);
+		font-size: clamp(1.72rem, 3vw, 2.18rem);
+		font-weight: 780;
+		line-height: 0.95;
+		white-space: nowrap;
 	}
 
 	.product-modal__dates {
@@ -1929,12 +2007,28 @@ const modalProducts = products.map((product) => ({
 		.product-modal__specs dt {
 			margin-bottom: 0.16rem;
 			font-size: 0.54rem;
-			letter-spacing: 0.09em;
+			letter-spacing: 0.06em;
 		}
 
 		.product-modal__specs dd {
 			font-size: 0.76rem;
 			line-height: 1.22;
+		}
+
+		.product-modal__price {
+			order: 4;
+			width: 100%;
+			margin-top: 0.8rem;
+			padding-top: 0.78rem;
+		}
+
+		.product-modal__price span {
+			font-size: 0.58rem;
+			letter-spacing: 0.08em;
+		}
+
+		.product-modal__price strong {
+			font-size: 1.55rem;
 		}
 
 		.product-modal__dates {

@@ -45,6 +45,15 @@ const contactMethods = [
 		value: '24/7',
 	},
 ];
+
+const rekvizitiItems = [
+	{ label: 'Uzņēmums', value: 'SIA LBG' },
+	{ label: 'Reģistrācijas nr.', value: '40103955467' },
+	{ label: 'PVN nr.', value: 'LV40103955467' },
+	{ label: 'Juridiskā adrese', value: 'Druvas iela 14A, Rīga, LV-1002' },
+	{ label: 'SWIFT', value: 'HABALV22' },
+	{ label: 'IBAN', value: 'LV53HABA0551041046844' },
+];
 ---
 
 <BaseLayout title="Kontakti | Liepājas teltis" description="Sazinieties ar Liepājas teltis par telšu un inventāra nomu jūsu pasākumam.">
@@ -97,6 +106,26 @@ const contactMethods = [
 					);
 				})
 			}
+		</section>
+
+		<section class="contact-rekviziti" aria-labelledby="contact-rekviziti-title" data-reveal="up">
+			<div class="contact-rekviziti__inner">
+				<div class="contact-rekviziti__heading">
+					<span>Rekvizīti</span>
+					<h2 id="contact-rekviziti-title">Uzņēmuma informācija</h2>
+					<p>Noderīgi rēķina sagatavošanai vai pārskaitījumam.</p>
+				</div>
+				<dl class="contact-rekviziti__list">
+					{
+						rekvizitiItems.map((item) => (
+							<div class={item.label === 'Uzņēmums' ? 'contact-rekviziti__item contact-rekviziti__item--company' : 'contact-rekviziti__item'}>
+								<dt>{item.label}</dt>
+								<dd>{item.value}</dd>
+							</div>
+						))
+					}
+				</dl>
+			</div>
 		</section>
 
 		<section class="contact-map" aria-label="Atrašanās vieta" data-reveal="up">
@@ -158,6 +187,7 @@ const contactMethods = [
 
 	.contact-page__hero,
 	.contact-methods,
+	.contact-rekviziti,
 	.contact-map,
 	.contact-cta {
 		position: relative;
@@ -175,6 +205,7 @@ const contactMethods = [
 	}
 
 	.contact-page__intro h1,
+	.contact-rekviziti__heading h2,
 	.contact-cta h2 {
 		margin: 0;
 		color: var(--color-bark);
@@ -302,6 +333,92 @@ const contactMethods = [
 
 	.contact-method__links a:focus-visible {
 		box-shadow: var(--focus-ring);
+	}
+
+	.contact-rekviziti {
+		margin-top: clamp(1.65rem, 3.2vw, 2.6rem);
+		padding: 0;
+	}
+
+	.contact-rekviziti__inner {
+		display: grid;
+		grid-template-columns: minmax(15rem, 0.55fr) minmax(0, 1fr);
+		align-items: start;
+		gap: clamp(1.3rem, 5vw, 4.4rem);
+	}
+
+	.contact-rekviziti__heading span {
+		display: inline-block;
+		margin-bottom: 0.78rem;
+		color: var(--color-primary);
+		font-size: 0.74rem;
+		font-weight: 850;
+		letter-spacing: 0.1em;
+		line-height: 1;
+		text-transform: uppercase;
+	}
+
+	.contact-rekviziti__heading h2 {
+		max-width: 18rem;
+		font-size: clamp(1.75rem, 3vw, 2.55rem);
+		line-height: 1.04;
+	}
+
+	.contact-rekviziti__heading p {
+		max-width: 19rem;
+		margin: 0.85rem 0 0;
+		color: var(--color-text-muted);
+		font-size: 0.94rem;
+		font-weight: 560;
+		line-height: 1.62;
+	}
+
+	.contact-rekviziti__list {
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		background: rgba(255, 255, 255, 0.62);
+		border: 1px solid rgba(222, 212, 198, 0.86);
+		border-radius: 8px;
+		box-shadow: 0 18px 44px rgba(75, 64, 56, 0.06);
+	}
+
+	.contact-rekviziti__item {
+		min-width: 0;
+		padding: 1rem clamp(1rem, 2vw, 1.35rem);
+		border-top: 1px solid rgba(185, 167, 143, 0.28);
+		border-left: 1px solid rgba(185, 167, 143, 0.28);
+	}
+
+	.contact-rekviziti__item:nth-child(odd) {
+		border-left: 0;
+	}
+
+	.contact-rekviziti__item:nth-child(-n + 2) {
+		border-top: 0;
+	}
+
+	.contact-rekviziti__item--company {
+		background: rgba(237, 228, 215, 0.56);
+	}
+
+	.contact-rekviziti__list dt {
+		margin: 0 0 0.34rem;
+		color: var(--color-text-muted);
+		font-size: 0.72rem;
+		font-weight: 560;
+		letter-spacing: 0.07em;
+		line-height: 1.25;
+		text-transform: uppercase;
+	}
+
+	.contact-rekviziti__list dd {
+		margin: 0;
+		color: var(--color-bark);
+		font-size: clamp(0.95rem, 1.2vw, 1.04rem);
+		font-weight: 700;
+		line-height: 1.42;
+		overflow-wrap: anywhere;
 	}
 
 	.contact-cta a {
@@ -462,6 +579,15 @@ const contactMethods = [
 			border-bottom: 0;
 		}
 
+		.contact-rekviziti__inner {
+			grid-template-columns: 1fr;
+		}
+
+		.contact-rekviziti__heading h2,
+		.contact-rekviziti__heading p {
+			max-width: none;
+		}
+
 		.contact-cta {
 			grid-template-columns: auto minmax(0, 1fr);
 		}
@@ -527,6 +653,26 @@ const contactMethods = [
 			width: 100%;
 			padding-inline: 0.1rem;
 			font-size: 0.75rem;
+		}
+
+		.contact-rekviziti {
+			margin-top: 1.2rem;
+			padding-block: 1.25rem;
+		}
+
+		.contact-rekviziti__list {
+			grid-template-columns: 1fr;
+		}
+
+		.contact-rekviziti__item,
+		.contact-rekviziti__item:nth-child(odd),
+		.contact-rekviziti__item:nth-child(-n + 2) {
+			border-left: 0;
+			border-top: 1px solid rgba(185, 167, 143, 0.28);
+		}
+
+		.contact-rekviziti__item:first-child {
+			border-top: 0;
 		}
 
 		.contact-map {

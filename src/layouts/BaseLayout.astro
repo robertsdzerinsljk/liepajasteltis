@@ -7,14 +7,86 @@ import ScrollAnimations from '../components/common/ScrollAnimations.astro';
 interface Props {
 	title?: string;
 	description?: string;
+	image?: string;
+	noindex?: boolean;
 	resetScrollOnLoad?: boolean;
+	structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
-	title = 'Liepājas Teltis',
-	description = 'Pasākumu telšu un inventāra noma Liepājā.',
+	title = 'Telšu noma Liepājā un visā Latvijā | Liepājas teltis',
+	description = 'Liepājas teltis piedāvā pasākumu telšu un inventāra nomu ar piegādi un uzstādīšanu Liepājā un visā Latvijā.',
+	image = '/images/liepajas-teltis-landing.svg',
+	noindex = false,
 	resetScrollOnLoad = false,
+	structuredData,
 } = Astro.props;
+
+const siteUrl = 'https://liepajasteltis.lv';
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl);
+canonicalUrl.hash = '';
+canonicalUrl.search = '';
+
+const imageUrl = new URL(image, siteUrl);
+const normalizedTitle = title.includes('Liepājas teltis') || title.includes('Liepājas Teltis') ? title : `${title} | Liepājas teltis`;
+const organizationSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'LocalBusiness',
+	'@id': `${siteUrl}/#business`,
+	name: 'Liepājas teltis',
+	legalName: 'SIA LBG',
+	url: siteUrl,
+	image: imageUrl.href,
+	logo: `${siteUrl}/images/liepajasteltis-logo.svg`,
+	email: 'info@liepajasteltis.lv',
+	telephone: ['+37129373231', '+37126488094'],
+	taxID: '40103955467',
+	vatID: 'LV40103955467',
+	address: {
+		'@type': 'PostalAddress',
+		addressCountry: 'LV',
+		addressLocality: 'Liepāja',
+		streetAddress: 'Roņu iela 8',
+	},
+	areaServed: [
+		{
+			'@type': 'City',
+			name: 'Liepāja',
+		},
+		{
+			'@type': 'Country',
+			name: 'Latvia',
+		},
+	],
+	priceRange: '€€',
+};
+const websiteSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	'@id': `${siteUrl}/#website`,
+	name: 'Liepājas teltis',
+	url: siteUrl,
+	inLanguage: 'lv-LV',
+	publisher: {
+		'@id': `${siteUrl}/#business`,
+	},
+};
+const pageSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebPage',
+	'@id': `${canonicalUrl.href}#webpage`,
+	url: canonicalUrl.href,
+	name: normalizedTitle,
+	description,
+	inLanguage: 'lv-LV',
+	isPartOf: {
+		'@id': `${siteUrl}/#website`,
+	},
+	about: {
+		'@id': `${siteUrl}/#business`,
+	},
+};
+const schemaGraph = [organizationSchema, websiteSchema, pageSchema, ...(Array.isArray(structuredData) ? structuredData : structuredData ? [structuredData] : [])];
 ---
 
 <!doctype html>
@@ -22,9 +94,30 @@ const {
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="Liepajas Teltis" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<link rel="canonical" href={canonicalUrl.href} />
 		<meta name="description" content={description} />
+		<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+		<meta name="theme-color" content="#6B7A4A" />
+		<meta property="og:site_name" content="Liepājas teltis" />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="lv_LV" />
+		<meta property="og:title" content={normalizedTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalUrl.href} />
+		<meta property="og:image" content={imageUrl.href} />
+		<meta property="og:image:alt" content="Liepājas teltis pasākumu telšu un inventāra noma" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={normalizedTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={imageUrl.href} />
 		<meta name="generator" content={Astro.generator} />
+		<script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': schemaGraph })} />
 		<script
 			is:inline
 			set:html={`(() => {
@@ -37,7 +130,7 @@ const {
 				}
 			})();`}
 		/>
-		<title>{title}</title>
+		<title>{normalizedTitle}</title>
 		{
 			resetScrollOnLoad && (
 				<script

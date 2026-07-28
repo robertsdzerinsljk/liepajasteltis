@@ -76,9 +76,9 @@ const isActiveNavItem = (href: string) => {
 };
 
 const rekvizitiItems = [
-	`© ${new Date().getFullYear()} Liepājas teltis`,
-	'Reģ. Nr. 00000000000',
-	'PVN Nr. LV00000000000',
+	'SIA LBG',
+	'Reģ. Nr. 40103955467',
+	'PVN Nr. LV40103955467',
 ];
 
 const categoryItems = [
@@ -106,9 +106,7 @@ const isRentalCategoryActive = categoryItems.some((item) => isActiveNavItem(item
 	<div class="site-header__shell">
 		<div class="site-header__bar">
 			<a class="site-header__logo" href="/" aria-label="Liepājas teltis sākums">
-				<slot name="logo">
-					<span class="site-header__logo-placeholder">Logo</span>
-				</slot>
+				<img class="site-header__logo-image" src="/images/liepajasteltis-logo-header-mark.svg" alt="Liepājas teltis" />
 			</a>
 
 			<nav class="site-header__nav" aria-label="Galvenā navigācija">
@@ -179,6 +177,9 @@ const isRentalCategoryActive = categoryItems.some((item) => isActiveNavItem(item
 				</label>
 				<label class="site-header__mobile-backdrop" for="site-header-mobile-menu" aria-label="Close navigation"></label>
 				<nav class="site-header__mobile-panel" aria-label="Mobile navigation">
+					<a class="site-header__mobile-brand" href="/" aria-label="Liepājas teltis sākums">
+						<img src="/images/liepajasteltis-logo-color-mark.svg" alt="Liepājas teltis" />
+					</a>
 					<ul class="site-header__mobile-list menu menu-vertical">
 						{
 							navItems.map((item) => (
@@ -412,23 +413,46 @@ const isRentalCategoryActive = categoryItems.some((item) => isActiveNavItem(item
 	}
 
 	.site-header__logo {
+		position: relative;
 		justify-self: start;
-		min-width: 8rem;
+		width: clamp(4.45rem, 6.3vw, 5.25rem);
+		min-width: clamp(4.45rem, 6.3vw, 5.25rem);
+		height: 3rem;
+		min-height: 3rem;
+		max-height: 3rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		color: var(--color-surface);
+		flex: 0 0 auto;
+		transform: none;
+		transition: none;
 	}
 
-	.site-header__logo-placeholder {
-		display: inline-flex;
-		min-height: 2.35rem;
-		align-items: center;
-		padding: 0.36rem 0.78rem;
-		color: rgba(255, 255, 255, 0.86);
-		border: 1px dashed rgba(203, 183, 154, 0.56);
-		border-radius: 999px;
-		font-size: 0.78rem;
-		font-weight: 750;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+	.site-header__logo-image {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: clamp(4.7rem, 6.65vw, 5.55rem);
+		height: 3.4rem;
+		max-width: none;
+		display: block;
+		object-fit: contain;
+		pointer-events: none;
+		transform: translate(-50%, -50%);
+	}
+
+	.site-header__logo:hover,
+	.site-header__logo:active,
+	.site-header__logo:focus {
+		color: var(--color-surface);
+		transform: none;
+	}
+
+	.site-header__logo:focus-visible {
+		outline: 2px solid rgba(255, 255, 255, 0.75);
+		outline-offset: 0.24rem;
+		box-shadow: none;
 	}
 
 	.site-header__nav {
@@ -865,7 +889,7 @@ const isRentalCategoryActive = categoryItems.some((item) => isActiveNavItem(item
 		max-width: 26rem;
 		height: 100vh;
 		height: 100dvh;
-		padding: 5.25rem clamp(1rem, 4vw, 1.35rem) 1.35rem;
+		padding: 6.75rem clamp(1rem, 4vw, 1.35rem) 1.35rem;
 		overflow: hidden;
 		overscroll-behavior: contain;
 		background: var(--color-surface);
@@ -893,6 +917,26 @@ const isRentalCategoryActive = categoryItems.some((item) => isActiveNavItem(item
 		width: 100%;
 		padding: 0;
 		color: var(--color-text);
+	}
+
+	.site-header__mobile-brand {
+		position: absolute;
+		top: -0.55rem;
+		left: -0.15rem;
+		width: auto;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		pointer-events: none;
+	}
+
+	.site-header__mobile-brand img {
+		width: 10.5rem;
+		height: 10.5rem;
+		display: block;
+		object-fit: contain;
 	}
 
 	.site-header__mobile-list a {
@@ -1147,7 +1191,13 @@ const isRentalCategoryActive = categoryItems.some((item) => isActiveNavItem(item
 		}
 
 		.site-header__logo {
-			min-width: 0;
+			width: 4.25rem;
+			min-width: 4.25rem;
+		}
+
+		.site-header__logo-image {
+			width: 4.6rem;
+			height: 2.82rem;
 		}
 
 		.site-header__categories {

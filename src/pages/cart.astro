@@ -10,7 +10,11 @@ import SiteFooter from '../components/common/SiteFooter.astro';
 import SiteHeader from '../components/common/SiteHeader.astro';
 ---
 
-<BaseLayout title="Nomas saraksts | Liepājas teltis" description="Apskatiet izvēlēto nomas inventāru un nosūtiet rezervācijas pieprasījumu.">
+<BaseLayout
+	title="Nomas saraksts | Liepājas teltis"
+	description="Apskatiet izvēlēto nomas inventāru un nosūtiet rezervācijas pieprasījumu."
+	noindex
+>
 	<div class="page-shell cart-page">
 		<SiteHeader />
 		<main class="cart-page__main" aria-labelledby="cart-page-title">
