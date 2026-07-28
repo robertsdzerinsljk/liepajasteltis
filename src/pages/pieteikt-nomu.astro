@@ -566,15 +566,19 @@ const productPickerItems = requestProducts.map(({ category, id, image, size, tit
 		}
 
 		updateSelectedProductField();
-		const formData = new FormData(requestForm);
+		const sourceFormData = new FormData(requestForm);
 
-		if (formData.get('botcheck')) {
+		if (sourceFormData.get('botcheck')) {
 			return;
 		}
 
-		formData.set('name', getFormDataString(formData, 'vards_uzvards'));
-		formData.set('email', getFormDataString(formData, 'epasts'));
-		formData.set('message', buildRequestMessage(formData));
+		const formData = new FormData();
+		formData.set('access_key', getFormDataString(sourceFormData, 'access_key'));
+		formData.set('subject', getFormDataString(sourceFormData, 'subject'));
+		formData.set('from_name', getFormDataString(sourceFormData, 'from_name'));
+		formData.set('name', getFormDataString(sourceFormData, 'vards_uzvards'));
+		formData.set('email', getFormDataString(sourceFormData, 'epasts'));
+		formData.set('message', buildRequestMessage(sourceFormData));
 		setRequestSubmitting(true);
 		setRequestStatus('Sūtām pieteikumu...', 'neutral');
 

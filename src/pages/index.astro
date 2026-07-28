@@ -1535,15 +1535,19 @@ const contactLinks = [
 			return;
 		}
 
-		const formData = new FormData(contactForm);
+		const sourceFormData = new FormData(contactForm);
 
-		if (formData.get('botcheck')) {
+		if (sourceFormData.get('botcheck')) {
 			return;
 		}
 
-		formData.set('name', getContactFormString(formData, 'vards_uzvards'));
-		formData.set('email', getContactFormString(formData, 'epasts'));
-		formData.set('message', buildContactFormMessage(formData));
+		const formData = new FormData();
+		formData.set('access_key', getContactFormString(sourceFormData, 'access_key'));
+		formData.set('subject', getContactFormString(sourceFormData, 'subject'));
+		formData.set('from_name', getContactFormString(sourceFormData, 'from_name'));
+		formData.set('name', getContactFormString(sourceFormData, 'vards_uzvards'));
+		formData.set('email', getContactFormString(sourceFormData, 'epasts'));
+		formData.set('message', buildContactFormMessage(sourceFormData));
 		setContactFormSubmitting(true);
 		setContactFormStatus('Sūtām pieteikumu...', 'neutral');
 
