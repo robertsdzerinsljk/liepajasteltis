@@ -133,7 +133,6 @@ const productImageOverrides: Record<string, { galleryImages: string[]; image?: s
 		galleryImages: [
 			'/images/products/kokteilgalds-1.jpg',
 			'/images/products/kokteilgalds.jpg',
-			'/images/products/kokteilgalds-2.jpg',
 		],
 		priceUnit: 'gab.',
 	},
@@ -159,6 +158,34 @@ const applyProductGalleryOverrides = (product: ProductItem) => {
 	};
 };
 
+const expandProductVariants = (product: ProductItem): ProductItem[] => {
+	if (product.id !== 'kokteilgalds-ar-galdautu') {
+		return [product];
+	}
+
+	return [
+		{
+			...product,
+			title: 'Kokteiļtipa galds ar galdautu',
+			description: 'Kokteiļtipa galds pasākumiem ar baltu vai melnu galdautu, piemērots stāvviesībām un uzkodu zonām.',
+			size: 'Balts vai melns galdauts',
+			variant: 'Ar baltu vai melnu galdautu',
+			galleryImages: ['/images/products/kokteilgalds-1.jpg', '/images/products/kokteilgalds.jpg'],
+			image: '/images/products/kokteilgalds-1.jpg',
+		},
+		{
+			...product,
+			id: 'kokteilgalds-bez-galdauta',
+			title: 'Saliekams kokteiļgalds bez galdauta',
+			description: 'Balts saliekams kokteiļgalds pasākumiem, kur nepieciešams praktisks galds bez dekoratīva galdauta.',
+			size: 'Balts galds bez galdauta',
+			variant: 'Bez galdauta',
+			galleryImages: ['/images/products/kokteilgalds-2.jpg'],
+			image: '/images/products/kokteilgalds-2.jpg',
+		},
+	];
+};
+
 export async function getProductsByPageSlug(pageSlug: string) {
 	const tableName = import.meta.env.SUPABASE_PRODUCTS_TABLE || 'products';
 	const rows = await fetchSupabaseRows<ProductRow>(tableName, {
@@ -169,7 +196,9 @@ export async function getProductsByPageSlug(pageSlug: string) {
 		},
 	});
 
-	const products = (sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[]).map(applyProductGalleryOverrides);
+	const products = (sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[])
+		.map(applyProductGalleryOverrides)
+		.flatMap(expandProductVariants);
 
 	return products;
 }
@@ -198,7 +227,9 @@ export async function getAllActiveProducts() {
 		},
 	});
 
-	const products = (sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[]).map(applyProductGalleryOverrides);
+	const products = (sortRows(rows).map(mapProductRow).filter(Boolean) as ProductItem[])
+		.map(applyProductGalleryOverrides)
+		.flatMap(expandProductVariants);
 
 	return products;
 }

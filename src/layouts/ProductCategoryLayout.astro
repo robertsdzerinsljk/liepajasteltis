@@ -1081,18 +1081,16 @@ const categoryStructuredData = [
 
 	.product-modal__image-stage.is-changing img,
 	.product-modal__fullscreen-stage.is-changing img {
-		animation: product-image-enter 220ms ease both;
+		animation: product-image-fade 180ms ease-out both;
 	}
 
-	@keyframes product-image-enter {
+	@keyframes product-image-fade {
 		from {
-			opacity: 0;
-			transform: translateX(0.85rem);
+			opacity: 0.35;
 		}
 
 		to {
 			opacity: 1;
-			transform: translateX(0);
 		}
 	}
 
