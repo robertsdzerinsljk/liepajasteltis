@@ -1,6 +1,11 @@
 {
-  "name": "Liepajas Teltis",
+  "id": "/",
+  "name": "Liepājas Teltis",
   "short_name": "LT",
+  "description": "Pasākumu telšu un inventāra noma ar piegādi un uzstādīšanu Liepājā un visā Latvijā.",
+  "lang": "lv-LV",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

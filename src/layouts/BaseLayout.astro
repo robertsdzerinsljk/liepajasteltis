@@ -16,7 +16,7 @@ interface Props {
 const {
 	title = 'Telšu noma Liepājā un visā Latvijā | Liepājas teltis',
 	description = 'Liepājas teltis piedāvā pasākumu telšu un inventāra nomu ar piegādi un uzstādīšanu Liepājā un visā Latvijā.',
-	image = '/images/liepajas-teltis-landing.svg',
+	image = '/og-image.png',
 	noindex = false,
 	resetScrollOnLoad = false,
 	structuredData,
@@ -28,6 +28,9 @@ canonicalUrl.hash = '';
 canonicalUrl.search = '';
 
 const imageUrl = new URL(image, siteUrl);
+const isPngImage = imageUrl.pathname.toLowerCase().endsWith('.png');
+const isJpegImage = /\.(jpe?g)$/i.test(imageUrl.pathname);
+const imageType = isPngImage ? 'image/png' : isJpegImage ? 'image/jpeg' : undefined;
 const normalizedTitle = title.includes('Liepājas teltis') || title.includes('Liepājas Teltis') ? title : `${title} | Liepājas teltis`;
 const organizationSchema = {
 	'@context': 'https://schema.org',
@@ -37,9 +40,25 @@ const organizationSchema = {
 	legalName: 'SIA LBG',
 	url: siteUrl,
 	image: imageUrl.href,
-	logo: `${siteUrl}/images/liepajasteltis-logo.svg`,
+	logo: `${siteUrl}/web-app-manifest-512x512.png`,
 	email: 'info@liepajasteltis.lv',
 	telephone: ['+37129373231', '+37126488094'],
+	contactPoint: [
+		{
+			'@type': 'ContactPoint',
+			telephone: '+37129373231',
+			contactType: 'customer service',
+			areaServed: 'LV',
+			availableLanguage: ['lv'],
+		},
+		{
+			'@type': 'ContactPoint',
+			telephone: '+37126488094',
+			contactType: 'customer service',
+			areaServed: 'LV',
+			availableLanguage: ['lv'],
+		},
+	],
 	taxID: '40103955467',
 	vatID: 'LV40103955467',
 	address: {
@@ -103,6 +122,7 @@ const schemaGraph = [organizationSchema, websiteSchema, pageSchema, ...(Array.is
 		<link rel="canonical" href={canonicalUrl.href} />
 		<meta name="description" content={description} />
 		<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+		<meta name="application-name" content="Liepājas Teltis" />
 		<meta name="theme-color" content="#6B7A4A" />
 		<meta property="og:site_name" content="Liepājas teltis" />
 		<meta property="og:type" content="website" />
@@ -111,11 +131,16 @@ const schemaGraph = [organizationSchema, websiteSchema, pageSchema, ...(Array.is
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonicalUrl.href} />
 		<meta property="og:image" content={imageUrl.href} />
+		<meta property="og:image:secure_url" content={imageUrl.href} />
+		{imageType && <meta property="og:image:type" content={imageType} />}
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
 		<meta property="og:image:alt" content="Liepājas teltis pasākumu telšu un inventāra noma" />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={normalizedTitle} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={imageUrl.href} />
+		<meta name="twitter:image:alt" content="Liepājas teltis pasākumu telšu un inventāra noma" />
 		<meta name="generator" content={Astro.generator} />
 		<script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': schemaGraph })} />
 		<script
