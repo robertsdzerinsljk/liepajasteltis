@@ -18,6 +18,7 @@
 }
 
 :root {
+	color-scheme: only light;
 	--color-primary: #8A9271;
 	--color-primary-hover: #747C5F;
 	--color-background: #F6F1E7;
@@ -52,7 +53,7 @@
 
 html {
 	min-height: 100%;
-	background: var(--color-background);
+	background-color: #F6F1E7;
 	color: var(--color-text);
 	font-family: var(--font-sans);
 }
@@ -60,7 +61,7 @@ html {
 body {
 	min-height: 100vh;
 	margin: 0;
-	background: var(--color-background);
+	background-color: #F6F1E7;
 	color: var(--color-text);
 }
 
@@ -89,7 +90,7 @@ button:focus-visible {
 
 .page-shell {
 	min-height: 100vh;
-	background: var(--color-background);
+	background-color: #F6F1E7;
 }
 
 .breadcrumb-trail {

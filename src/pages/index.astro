@@ -10,9 +10,7 @@ import Mail from '@lucide/astro/icons/mail';
 import MapPin from '@lucide/astro/icons/map-pin';
 import MessageCircle from '@lucide/astro/icons/message-circle';
 import PackageCheck from '@lucide/astro/icons/package-check';
-import Pause from '@lucide/astro/icons/pause';
 import Phone from '@lucide/astro/icons/phone';
-import Play from '@lucide/astro/icons/play';
 import ScrollToTop from '../components/common/ScrollToTop.astro';
 import Send from '@lucide/astro/icons/send';
 import ShieldCheck from '@lucide/astro/icons/shield-check';
@@ -22,8 +20,9 @@ import Truck from '@lucide/astro/icons/truck';
 import UserRound from '@lucide/astro/icons/user-round';
 import hugeIcons from '@iconify-json/hugeicons/icons.json';
 
-const heroImage = '/images/liepajas-teltis-landing.svg';
-const heroVideo = '/videos/hero.webm';
+const heroImage = '/images/hero-poster.jpg';
+const heroVideoMp4 = '/videos/hero.mp4';
+const heroVideoWebm = '/videos/hero.webm';
 
 const heroFeatures = [
 	{
@@ -185,21 +184,12 @@ const contactLinks = [
 		<ScrollToTop />
 		<section class="landing-hero" aria-labelledby="landing-hero-title" data-landing-hero>
 			<figure class="landing-hero__media" aria-label="Pasākumu telts piemērs" data-hero-media>
-				<video autoplay muted loop playsinline poster={heroImage} aria-hidden="true" preload="metadata">
-					<source src={heroVideo} type="video/webm" />
+				<video autoplay muted loop playsinline poster={heroImage} aria-hidden="true" preload="auto" disablepictureinpicture>
+					<source src={heroVideoMp4} type="video/mp4" />
+					<source src={heroVideoWebm} type="video/webm" />
 				</video>
 				<img class="landing-hero__poster" src={heroImage} alt="" aria-hidden="true" />
 			</figure>
-			<button
-				class="landing-hero__media-toggle"
-				type="button"
-				aria-label="Apturēt fona video"
-				aria-pressed="false"
-				data-hero-media-toggle
-			>
-				<Pause class="landing-hero__pause-icon" aria-hidden="true" />
-				<Play class="landing-hero__play-icon" aria-hidden="true" />
-			</button>
 			<div class="landing-hero__shell">
 				<div class="landing-hero__content">
 					<h1 id="landing-hero-title" aria-label="Radām vietu īpašiem mirkļiem">
@@ -429,45 +419,6 @@ const contactLinks = [
 	<LandingAnimations />
 </BaseLayout>
 
-<script>
-	const heroVideoElement = document.querySelector<HTMLVideoElement>('.landing-hero video');
-	const heroMediaToggle = document.querySelector<HTMLButtonElement>('[data-hero-media-toggle]');
-	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-	const syncHeroMedia = () => {
-		if (!heroVideoElement || !heroMediaToggle) return;
-
-		if (reducedMotion.matches) {
-			heroVideoElement.pause();
-			heroMediaToggle.hidden = true;
-			return;
-		}
-
-		heroMediaToggle.hidden = false;
-		const isPaused = heroVideoElement.paused;
-		heroMediaToggle.classList.toggle('is-paused', isPaused);
-		heroMediaToggle.setAttribute('aria-pressed', String(isPaused));
-		heroMediaToggle.setAttribute('aria-label', isPaused ? 'Atskaņot fona video' : 'Apturēt fona video');
-	};
-
-	heroMediaToggle?.addEventListener('click', async () => {
-		if (!heroVideoElement) return;
-
-		if (heroVideoElement.paused) {
-			await heroVideoElement.play();
-		} else {
-			heroVideoElement.pause();
-		}
-
-		syncHeroMedia();
-	});
-
-	reducedMotion.addEventListener('change', syncHeroMedia);
-	heroVideoElement?.addEventListener('play', syncHeroMedia);
-	heroVideoElement?.addEventListener('pause', syncHeroMedia);
-	syncHeroMedia();
-</script>
-
 <style>
 	:global(body:has([data-landing-page]) .site-header) {
 		position: fixed;
@@ -572,6 +523,19 @@ const contactLinks = [
 		box-shadow: 0 12px 32px rgba(15, 19, 12, 0.2);
 	}
 
+	@media (min-width: 641px) {
+		.landing-hero__shell {
+			grid-template-rows: auto auto;
+			align-content: center;
+			align-items: start;
+			row-gap: clamp(1.5rem, 3vw, 2.25rem);
+		}
+
+		.landing-hero__content {
+			padding-bottom: 0;
+		}
+	}
+
 	.landing-hero__feature {
 		display: flex;
 		align-items: center;
@@ -657,45 +621,20 @@ const contactLinks = [
 		object-position: center 48%;
 	}
 
+	.landing-hero__media video {
+		pointer-events: none;
+		-webkit-appearance: none;
+	}
+
+	.landing-hero__media video::-webkit-media-controls,
+	.landing-hero__media video::-webkit-media-controls-overlay-play-button,
+	.landing-hero__media video::-webkit-media-controls-start-playback-button {
+		display: none !important;
+		-webkit-appearance: none;
+	}
+
 	.landing-hero__poster {
 		display: none;
-	}
-
-	.landing-hero__media-toggle {
-		position: absolute;
-		right: clamp(1rem, 3vw, 2rem);
-		bottom: clamp(1rem, 2.5vw, 1.6rem);
-		z-index: 3;
-		width: 2.75rem;
-		height: 2.75rem;
-		display: grid;
-		place-items: center;
-		color: var(--color-surface);
-		background: rgba(24, 30, 18, 0.72);
-		border: 0;
-		border-radius: 999px;
-		box-shadow: 0 10px 24px rgba(15, 19, 12, 0.22);
-		cursor: pointer;
-	}
-
-	.landing-hero__media-toggle:hover {
-		background: rgba(24, 30, 18, 0.9);
-		transform: translateY(-2px);
-	}
-
-	.landing-hero__media-toggle svg {
-		width: 1rem;
-		height: 1rem;
-		fill: currentColor;
-	}
-
-	.landing-hero__play-icon,
-	.landing-hero__media-toggle.is-paused .landing-hero__pause-icon {
-		display: none;
-	}
-
-	.landing-hero__media-toggle.is-paused .landing-hero__play-icon {
-		display: block;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -1308,10 +1247,6 @@ const contactLinks = [
 		.landing-hero__media img,
 		.landing-hero__media video {
 			object-position: 58% center;
-		}
-
-		.landing-hero__media-toggle {
-			display: none;
 		}
 
 		.categories-section {
