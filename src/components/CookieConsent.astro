@@ -5,9 +5,43 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 <script>
 	import * as CookieConsent from 'vanilla-cookieconsent';
 
+	const measurementId = 'G-2X7BFB2HNY';
+	const analyticsScriptId = 'google-analytics';
+	const analyticsInitScriptId = 'google-analytics-init';
+	const analyticsDisabledKey = `ga-disable-${measurementId}`;
+
+	const loadGoogleAnalytics = () => {
+		if (document.getElementById(analyticsScriptId)) return;
+
+		const initScript = document.createElement('script');
+		initScript.id = analyticsInitScriptId;
+		initScript.textContent = `
+			window['${analyticsDisabledKey}'] = false;
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', '${measurementId}');
+		`;
+		document.head.append(initScript);
+
+		const script = document.createElement('script');
+		script.id = analyticsScriptId;
+		script.async = true;
+		script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+		document.head.append(script);
+	};
+
+	const syncGoogleAnalytics = () => {
+		const hasAnalyticsConsent = CookieConsent.acceptedCategory('analytics');
+		(window as unknown as Record<string, unknown>)[analyticsDisabledKey] = !hasAnalyticsConsent;
+		if (hasAnalyticsConsent) loadGoogleAnalytics();
+	};
+
 	CookieConsent.run({
 		mode: 'opt-in',
-		revision: 2,
+		revision: 3,
+		onConsent: syncGoogleAnalytics,
+		onChange: syncGoogleAnalytics,
 
 		cookie: {
 			name: 'cc_cookie',
@@ -41,8 +75,6 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 				autoClear: {
 					cookies: [
 						{ name: /^_ga/ },
-						{ name: '_gid' },
-						{ name: /^_gat/ },
 					],
 				},
 			},
@@ -105,7 +137,7 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 							{
 								title: 'Analītikas sīkdatnes',
 								description:
-									'Google Analytics sīkdatnes tiek aktivizētas tikai tad, ja analītika ir pieslēgta un jūs šai kategorijai piekrītat.',
+									'Google Analytics 4 (mērījumu ID G-2X7BFB2HNY) apkopo vietnes lietojuma statistiku. Tas tiek ielādēts tikai pēc jūsu piekrišanas.',
 								linkedCategory: 'analytics',
 								cookieTable: {
 									headers: {
@@ -115,19 +147,14 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 									},
 									body: [
 										{
-											name: '_ga, _ga_*',
+											name: '_ga',
 											expiration: 'Līdz 2 gadiem',
-											description: 'Atšķir apmeklētājus un apkopo vietnes lietojuma statistiku.',
+											description: 'Atšķir apmeklētājus un apkopo anonimizētu vietnes lietojuma statistiku.',
 										},
 										{
-											name: '_gid',
-											expiration: '24 stundas',
-											description: 'Atšķir apmeklētājus īstermiņa statistikai.',
-										},
-										{
-											name: '_gat, _gat_*',
-											expiration: 'Līdz 1 minūtei',
-											description: 'Ierobežo pieprasījumu biežumu analītikas pakalpojumam.',
+											name: '_ga_2X7BFB2HNY',
+											expiration: 'Līdz 2 gadiem',
+											description: 'Saglabā un uzskaita vietnes apmeklējumus Google Analytics 4 īpašumam.',
 										},
 									],
 								},

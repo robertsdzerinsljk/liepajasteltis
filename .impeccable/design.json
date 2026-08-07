@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-06T21:32:34.7910052+03:00",
+  "title": "Design System: Liepājas teltis",
+  "extensions": {
+    "colorMeta": {
+      "pavilion-sage": { "role": "primary", "displayName": "Pavilion Sage", "canonical": "#8A9271", "tonalRamp": ["oklch(15% 0.03 116)", "oklch(27% 0.04 116)", "oklch(39% 0.05 116)", "oklch(52% 0.06 116)", "oklch(64% 0.06 116)", "oklch(76% 0.05 116)", "oklch(87% 0.03 116)", "oklch(95% 0.015 116)"] },
+      "pavilion-sage-hover": { "role": "primary", "displayName": "Deep Pavilion Sage", "canonical": "#747C5F", "tonalRamp": ["oklch(15% 0.03 116)", "oklch(27% 0.04 116)", "oklch(39% 0.05 116)", "oklch(52% 0.055 116)", "oklch(64% 0.05 116)", "oklch(76% 0.04 116)", "oklch(87% 0.025 116)", "oklch(95% 0.012 116)"] },
+      "header-olive": { "role": "primary", "displayName": "Canopy Olive", "canonical": "#6B7A4A", "tonalRamp": ["oklch(15% 0.04 119)", "oklch(27% 0.055 119)", "oklch(39% 0.07 119)", "oklch(52% 0.08 119)", "oklch(64% 0.07 119)", "oklch(76% 0.055 119)", "oklch(87% 0.03 119)", "oklch(95% 0.015 119)"] },
+      "canvas-cream": { "role": "neutral", "displayName": "Canvas Cream", "canonical": "#F6F1E7", "tonalRamp": ["oklch(15% 0.012 82)", "oklch(27% 0.015 82)", "oklch(39% 0.018 82)", "oklch(52% 0.02 82)", "oklch(64% 0.022 82)", "oklch(76% 0.024 82)", "oklch(87% 0.024 82)", "oklch(95% 0.02 82)"] },
+      "soft-linen": { "role": "neutral", "displayName": "Soft Linen", "canonical": "#EDE4D7", "tonalRamp": ["oklch(15% 0.015 73)", "oklch(27% 0.02 73)", "oklch(39% 0.025 73)", "oklch(52% 0.03 73)", "oklch(64% 0.03 73)", "oklch(76% 0.028 73)", "oklch(87% 0.024 73)", "oklch(95% 0.016 73)"] },
+      "linen-flax": { "role": "secondary", "displayName": "Linen Flax", "canonical": "#CBB79A", "tonalRamp": ["oklch(15% 0.025 72)", "oklch(27% 0.035 72)", "oklch(39% 0.045 72)", "oklch(52% 0.055 72)", "oklch(64% 0.055 72)", "oklch(76% 0.045 72)", "oklch(87% 0.03 72)", "oklch(95% 0.015 72)"] },
+      "driftwood": { "role": "secondary", "displayName": "Driftwood", "canonical": "#9B8773", "tonalRamp": ["oklch(15% 0.025 58)", "oklch(27% 0.035 58)", "oklch(39% 0.045 58)", "oklch(52% 0.05 58)", "oklch(64% 0.045 58)", "oklch(76% 0.035 58)", "oklch(87% 0.022 58)", "oklch(95% 0.012 58)"] },
+      "warm-bark": { "role": "neutral", "displayName": "Warm Bark", "canonical": "#4B4038", "tonalRamp": ["oklch(15% 0.018 54)", "oklch(27% 0.025 54)", "oklch(39% 0.03 54)", "oklch(52% 0.032 54)", "oklch(64% 0.028 54)", "oklch(76% 0.022 54)", "oklch(87% 0.014 54)", "oklch(95% 0.008 54)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Garden Display", "purpose": "Major occasion-setting statements and expressive section headlines." },
+      "headline": { "displayName": "Editorial Headline", "purpose": "Section introductions with warmth and ceremony." },
+      "title": { "displayName": "Product Title", "purpose": "Compact, legible product and card names." },
+      "body": { "displayName": "Service Body", "purpose": "Explanations, product details, and form guidance." },
+      "label": { "displayName": "Quiet Label", "purpose": "Eyebrows, field labels, and compact trust signals." }
+    },
+    "shadows": [
+      { "name": "soft-lift", "value": "0 8px 24px rgba(75, 64, 56, 0.07)", "purpose": "Default ambient lift for cards and supporting panels." },
+      { "name": "strong-lift", "value": "0 16px 40px rgba(75, 64, 56, 0.11)", "purpose": "Floating controls, dropdowns, and emphasized surfaces." },
+      { "name": "focus-halo", "value": "0 0 0 3px rgba(138, 146, 113, 0.24)", "purpose": "Accessible keyboard focus paired with a solid outline." }
+    ],
+    "motion": [
+      { "name": "state-standard", "value": "160ms ease", "purpose": "Color, border, shadow, and small position changes." },
+      { "name": "surface-lift", "value": "180ms ease", "purpose": "Card hover elevation and directional icon movement." },
+      { "name": "image-breathe", "value": "520ms ease", "purpose": "Restrained zoom on category photography." }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "640px" },
+      { "name": "navigation", "value": "720px" },
+      { "name": "layout", "value": "860px" },
+      { "name": "wide-layout", "value": "960px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The pill-shaped sage action used for rental and submission CTAs.",
+      "html": "<button class=\"ds-btn-primary\">Pieteikt nomu <span aria-hidden=\"true\">→</span></button>",
+      "css": ".ds-btn-primary{min-height:3.15rem;padding:0 1.7rem;display:inline-flex;align-items:center;justify-content:center;gap:.72rem;color:var(--color-surface,#fff);background:var(--color-primary,#8A9271);border:0;border-radius:999px;font:800 .82rem/1 Inter,system-ui,sans-serif;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 12px 22px rgba(138,146,113,.24);transition:background-color 160ms ease,transform 160ms ease}.ds-btn-primary:hover{background:var(--color-primary-hover,#747C5F);transform:translateY(-2px)}.ds-btn-primary:focus-visible{outline:2px solid var(--color-primary,#8A9271);outline-offset:3px;box-shadow:0 0 0 3px rgba(138,146,113,.24)}"
+    },
+    {
+      "name": "Quiet Filter Chip",
+      "kind": "chip",
+      "description": "A compact filter that moves from a quiet neutral state to olive selection.",
+      "html": "<button class=\"ds-chip\">Visas teltis</button>",
+      "css": ".ds-chip{min-height:2.6rem;padding:0 1rem;color:var(--color-bark,#4B4038);background:transparent;border:1px solid transparent;border-radius:12px;font:750 .82rem/1 Inter,system-ui,sans-serif;transition:background-color 160ms ease,color 160ms ease,transform 160ms ease}.ds-chip:hover,.ds-chip[aria-pressed=\"true\"]{color:#fff;background:#6B7A4A}.ds-chip:focus-visible{outline:2px solid var(--color-primary,#8A9271);outline-offset:3px}"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "An image-led rental card with warm framing and gentle hover lift.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-media\" aria-hidden=\"true\"></div><div class=\"ds-card-body\"><span class=\"ds-card-tag\">Pasākumiem</span><h3>Pagoda telts 5 × 5 m</h3><p>Piemērota svinībām un āra pasākumiem.</p></div></article>",
+      "css": ".ds-card{width:290px;overflow:hidden;color:var(--color-bark,#4B4038);background:rgba(255,255,255,.72);border:1px solid rgba(222,212,198,.82);border-radius:12px;box-shadow:0 13px 26px rgba(75,64,56,.08);transition:box-shadow 180ms ease,transform 180ms ease}.ds-card:hover{box-shadow:0 18px 38px rgba(75,64,56,.13);transform:translateY(-4px)}.ds-card-media{aspect-ratio:1.42/1;background:linear-gradient(145deg,#EDE4D7,#CBB79A)}.ds-card-body{padding:1rem}.ds-card-tag{display:inline-block;padding:.28rem .45rem;color:#73675D;background:rgba(237,228,215,.66);border-radius:999px;font:600 .72rem/1 Inter,system-ui,sans-serif}.ds-card h3{margin:.75rem 0 .4rem;font:650 1.15rem/1.24 Inter,system-ui,sans-serif}.ds-card p{margin:0;color:#73675D;font:500 .85rem/1.5 Inter,system-ui,sans-serif}"
+    },
+    {
+      "name": "Contact Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A warm-white pill field with a clear sage focus state.",
+      "html": "<label class=\"ds-field\"><span>Epasts</span><input type=\"email\" placeholder=\"jusu@epasts.lv\"></label>",
+      "css": ".ds-field{display:grid;gap:.48rem;color:#344234;font:500 .72rem/1.25 Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase}.ds-field input{min-height:2.75rem;padding:0 1rem;color:var(--color-bark,#4B4038);background:rgba(255,255,255,.88);border:1px solid rgba(185,167,143,.62);border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 2px 8px rgba(75,64,56,.08);font:500 .96rem/1 Inter,system-ui,sans-serif;letter-spacing:normal;text-transform:none}.ds-field input:focus{border-color:#8A9271;outline:0;box-shadow:0 0 0 3px rgba(138,146,113,.24),0 2px 10px rgba(75,64,56,.1)}"
+    },
+    {
+      "name": "Pavilion Navigation",
+      "kind": "nav",
+      "description": "The deep olive navigation canopy with quiet white links and underline state.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Galvenā navigācija\"><strong>Liepājas teltis</strong><a class=\"is-active\" href=\"#\">Sākums</a><a href=\"#\">Inventārs</a><a href=\"#\">Kontakti</a></nav>",
+      "css": ".ds-nav{padding:.8rem 1.2rem;display:flex;align-items:center;gap:.65rem;color:#fff;background:#6B7A4A;border-radius:0 0 26px 26px;box-shadow:0 16px 40px rgba(75,64,56,.11);font:600 .9rem/1 Inter,system-ui,sans-serif}.ds-nav strong{margin-right:auto;font-family:Georgia,serif;font-weight:500}.ds-nav a{position:relative;padding:.55rem .72rem;color:rgba(255,255,255,.9);border-radius:999px;text-decoration:none}.ds-nav a::after{position:absolute;right:.7rem;bottom:.2rem;left:.7rem;height:2px;background:currentColor;border-radius:999px;content:\"\";opacity:0;transform:scaleX(.4);transition:opacity 180ms ease,transform 180ms ease}.ds-nav a:hover::after,.ds-nav a.is-active::after{opacity:.86;transform:scaleX(1)}.ds-nav a:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Garden Pavilion",
+    "overview": "The system should feel like arriving at a well-prepared outdoor celebration: calm, natural, hospitable, and quietly refined. Warm cream provides daylight and breathing room; muted greens create trust and action; bark and linen tones give the interface the material warmth of wood, canvas, and woven fabric. The atmosphere is soft without becoming fragile and polished without becoming formal.\n\nThe interface balances expressive serif display type with practical sans-serif controls and body copy. Imagery, generous spacing, and gently lifted surfaces do the emotional work, while buttons and form controls remain direct and dependable. Decorative dotted fields and diffused gradients may suggest landscape and filtered light, but they remain background texture rather than spectacle.",
+    "keyCharacteristics": [
+      "Warm cream canvases with restrained sage and olive accents.",
+      "Garden-inspired softness grounded by warm brown text.",
+      "Editorial serif moments paired with a highly legible sans-serif utility layer.",
+      "Rounded, tactile controls and lightly elevated cards.",
+      "Calm movement that clarifies hierarchy and interaction."
+    ],
+    "rules": [
+      { "name": "The Soft Spectrum Rule", "body": "Stay within warm, low-chroma greens and earth neutrals; hard, flashy, neon, or synthetic high-saturation colors do not belong in this system.", "section": "colors" },
+      { "name": "The Cream Canvas Rule", "body": "Canvas Cream is the default world. Pure white is a lifted material placed on it, not a replacement page background.", "section": "colors" },
+      { "name": "The Occasion and Utility Rule", "body": "Use serif type to evoke the event; use sans-serif type to help the customer organize it.", "section": "typography" },
+      { "name": "The Quiet Label Rule", "body": "Uppercase labels may be tracked and compact, but never louder than the title or action they introduce.", "section": "typography" },
+      { "name": "The Ambient Lift Rule", "body": "Shadows should feel like soft daylight, never glossy black drop shadows or dramatic neon glows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Canvas Cream as the environmental background and warm white as a raised material.",
+      "Do keep greens muted, natural, and tied to action or brand emphasis.",
+      "Do pair editorial serif headlines with practical sans-serif content and controls.",
+      "Do use warm borders and ambient shadows together when a surface needs clear separation.",
+      "Do preserve generous spacing and let event photography carry visual interest."
+    ],
+    "donts": [
+      "Don't introduce neon, electric, or hard flashy colors, even for status or promotional accents.",
+      "Don't replace warm bark text with cold black across the interface.",
+      "Don't use sharp corners or heavy dark shadows as the default surface language.",
+      "Don't overload cream backgrounds with many competing decorative motifs.",
+      "Don't make every label uppercase or every surface heavily elevated; hierarchy depends on restraint."
+    ]
+  }
+}

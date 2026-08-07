@@ -15,7 +15,7 @@ const actions = [
 ];
 ---
 
-<nav class="floating-actions" aria-label="Ātrie kontakti">
+<nav class="floating-actions" aria-label="Ātrie kontakti" data-floating-actions>
 	{
 		actions.map((action) => (
 			<a
@@ -39,3 +39,17 @@ const actions = [
 		))
 	}
 </nav>
+
+<script>
+	const floatingActions = document.querySelector<HTMLElement>('[data-floating-actions]');
+	const mobileViewport = window.matchMedia('(max-width: 640px)');
+
+	const syncFloatingActions = () => {
+		if (!floatingActions) return;
+		floatingActions.classList.toggle('is-visible', !mobileViewport.matches || window.scrollY > 24);
+	};
+
+	window.addEventListener('scroll', syncFloatingActions, { passive: true });
+	mobileViewport.addEventListener('change', syncFloatingActions);
+	syncFloatingActions();
+</script>

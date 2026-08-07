@@ -23,6 +23,12 @@ const {
 } = Astro.props;
 
 const siteUrl = 'https://liepajasteltis.lv';
+const logoUrl = `${siteUrl}/logo.png`;
+const socialProfiles = [
+	'https://www.facebook.com/profile.php?id=61592843150289',
+	'https://www.instagram.com/liepajasteltis/',
+	'https://www.tiktok.com/@liepajasteltis',
+];
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl);
 canonicalUrl.hash = '';
 canonicalUrl.search = '';
@@ -36,11 +42,21 @@ const organizationSchema = {
 	'@context': 'https://schema.org',
 	'@type': 'LocalBusiness',
 	'@id': `${siteUrl}/#business`,
-	name: 'Liepājas teltis',
+	name: 'Liepājas Teltis',
+	alternateName: 'Liepājas teltis',
 	legalName: 'SIA LBG',
 	url: siteUrl,
+	description: 'Pasākumu telšu un inventāra noma ar piegādi un uzstādīšanu Liepājā, Kurzemē un visā Latvijā.',
 	image: imageUrl.href,
-	logo: `${siteUrl}/web-app-manifest-512x512.png`,
+	logo: {
+		'@type': 'ImageObject',
+		'@id': `${siteUrl}/#logo`,
+		url: logoUrl,
+		contentUrl: logoUrl,
+		width: 1024,
+		height: 1024,
+	},
+	sameAs: socialProfiles,
 	email: 'info@liepajasteltis.lv',
 	telephone: ['+37129373231', '+37126488094'],
 	contactPoint: [
@@ -65,12 +81,18 @@ const organizationSchema = {
 		'@type': 'PostalAddress',
 		addressCountry: 'LV',
 		addressLocality: 'Liepāja',
+		addressRegion: 'Kurzeme',
 		streetAddress: 'Roņu iela 8',
 	},
+	hasMap: 'https://www.google.com/maps/search/?api=1&query=Liep%C4%81ja%2C%20Ro%C5%86u%20iela%208',
 	areaServed: [
 		{
 			'@type': 'City',
 			name: 'Liepāja',
+		},
+		{
+			'@type': 'AdministrativeArea',
+			name: 'Kurzeme',
 		},
 		{
 			'@type': 'Country',
@@ -83,7 +105,7 @@ const websiteSchema = {
 	'@context': 'https://schema.org',
 	'@type': 'WebSite',
 	'@id': `${siteUrl}/#website`,
-	name: 'Liepājas teltis',
+	name: 'Liepājas Teltis',
 	url: siteUrl,
 	inLanguage: 'lv-LV',
 	publisher: {
@@ -104,6 +126,12 @@ const pageSchema = {
 	about: {
 		'@id': `${siteUrl}/#business`,
 	},
+	author: {
+		'@id': `${siteUrl}/#business`,
+	},
+	publisher: {
+		'@id': `${siteUrl}/#business`,
+	},
 };
 const schemaGraph = [organizationSchema, websiteSchema, pageSchema, ...(Array.isArray(structuredData) ? structuredData : structuredData ? [structuredData] : [])];
 ---
@@ -121,7 +149,10 @@ const schemaGraph = [organizationSchema, websiteSchema, pageSchema, ...(Array.is
 		<link rel="manifest" href="/site.webmanifest" />
 		<link rel="canonical" href={canonicalUrl.href} />
 		<meta name="description" content={description} />
-		<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+		<meta
+			name="robots"
+			content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+		/>
 		<meta name="application-name" content="Liepājas Teltis" />
 		<meta name="theme-color" content="#6B7A4A" />
 		<meta property="og:site_name" content="Liepājas teltis" />

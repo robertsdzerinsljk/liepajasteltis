@@ -11,7 +11,12 @@ export default defineConfig({
 	devToolbar: {
 		enabled: false,
 	},
-	integrations: [react(), sitemap()],
+	integrations: [
+		react(),
+		sitemap({
+			filter: (page) => !['/cart/', '/kontakti2/'].some((pathname) => new URL(page).pathname === pathname),
+		}),
+	],
 	vite: {
 		plugins: [tailwindcss()],
 	},
